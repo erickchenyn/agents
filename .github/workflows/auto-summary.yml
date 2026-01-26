@@ -29,6 +29,8 @@ jobs:
 
           ## Available Skills
 
+          | Skill | Description |
+          |-------|-------------|
           EOF
 
           # Process each skill
@@ -56,12 +58,8 @@ jobs:
                 END { print description }
               ' "${skill_dir}SKILL.md")
 
-              # If no description found in frontmatter, use skill name
-              if [ -z "$description" ]; then
-                description="$skill_name skill"
-              fi
-
-              echo "- **$skill_name**: $description" >> README.md
+              # For empty description, leave second column empty
+              echo "| $skill_name | $description |" >> README.md
             fi
           done
 
