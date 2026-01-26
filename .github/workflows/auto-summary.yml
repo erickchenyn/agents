@@ -84,5 +84,5 @@ jobs:
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
           git add README.md
-          git commit -m "docs(README): claude auto summary (${{ steps.commit.outputs.sha }})"
+          git commit -m "docs(README): auto summary (${{ steps.commit.outputs.sha }})"
           git push
