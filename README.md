@@ -11,4 +11,4 @@ This repository contains Claude skills for various automation tasks.
 
 ---
 
-*This document was automatically generated based on commit [`85fb38b620130a6ebeaf0bb01953179836cc61e5`](https://github.com/erickchenyn/claudy/commit/85fb38b620130a6ebeaf0bb01953179836cc61e5).*
+*This document was automatically generated based on commit [`240c311579c76d0801ea677cb20d8941febc64bb`](https://github.com/erickchenyn/claudy/commit/240c311579c76d0801ea677cb20d8941febc64bb).*
