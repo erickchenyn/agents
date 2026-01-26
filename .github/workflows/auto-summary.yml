@@ -27,8 +27,6 @@ jobs:
 
           This repository contains Claude skills for various automation tasks.
 
-          ## Available Skills
-
           | Skill | Description |
           |-------|-------------|
           EOF
