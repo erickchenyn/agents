@@ -11,4 +11,4 @@ This repository contains Claude Code global prompts for personal use in Paraflow
 
 ---
 
-*This document was automatically generated based on commit [`9ecde8e678b54375ccaa3c8e75074f6167f8fe61`](https://github.com/erickchenyn/claude-paraflow/commit/9ecde8e678b54375ccaa3c8e75074f6167f8fe61).*
+*This document was automatically generated based on commit [`03ece4b2a9c0891c93a2987dbb3be27d7c634633`](https://github.com/erickchenyn/claude-paraflow/commit/03ece4b2a9c0891c93a2987dbb3be27d7c634633).*
