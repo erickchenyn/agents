@@ -14,6 +14,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 - [ ] 你创建的提交，应在最后记录 `Co-Authored-By: Claude <noreply@anthropic.com>`
 - [ ] 成功创建 Commit 之后自动推送到远程。
 - [ ] 如果分支还没有对应的 PR，则创建 PR
+  - 在 PR 上设置合并后删除分支
 - [ ] 如果此次修改有想关联的 Issue，则应该关联 Issue
 
 ## 跟踪 PR 状态
@@ -36,6 +37,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 
 - [ ] 将 PR 加入合并队列，等待合并
 - [ ] 等 PR 成功合并
+- [ ] 确认 feature 分支已删除
 - [ ] 如 PR 有关联的 Issue，查询 Issue 中的执行计划进度
   - [ ] 将相关的工作标记完成
   - [ ] 如果全部完成，则将 Issue 关掉
