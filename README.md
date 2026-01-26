@@ -2,8 +2,6 @@
 
 This repository contains Claude skills for various automation tasks.
 
-## Available Skills
-
 | Skill | Description |
 |-------|-------------|
 | commit | 提交代码、跟踪 PR 状态、完成代码合并 |
@@ -13,4 +11,4 @@ This repository contains Claude skills for various automation tasks.
 
 ---
 
-*This document was automatically generated based on commit [`ee271ac8998fc045a9ad41d0ff8a08f3ea817525`](https://github.com/erickchenyn/claudy/commit/ee271ac8998fc045a9ad41d0ff8a08f3ea817525).*
+*This document was automatically generated based on commit [`05adcb8dcd5c5650cd2165b20df9f03c48642daa`](https://github.com/erickchenyn/claudy/commit/05adcb8dcd5c5650cd2165b20df9f03c48642daa).*
