@@ -1,6 +1,6 @@
-# CLAUDY
+# CLAUDE PARAFLOW
 
-This repository contains Claude skills for various automation tasks.
+This repository contains Claude Code global prompts for personal use in Paraflow Team.
 
 | Skill | Description |
 |-------|-------------|
@@ -11,4 +11,4 @@ This repository contains Claude skills for various automation tasks.
 
 ---
 
-*This document was automatically generated based on commit [`05adcb8dcd5c5650cd2165b20df9f03c48642daa`](https://github.com/erickchenyn/claudy/commit/05adcb8dcd5c5650cd2165b20df9f03c48642daa).*
+*This document was automatically generated based on commit [`5c8306298fea4a7517b68180485bd94386a3b25b`](https://github.com/erickchenyn/claude-paraflow/commit/5c8306298fea4a7517b68180485bd94386a3b25b).*
