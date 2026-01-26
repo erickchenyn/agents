@@ -1,7 +1,7 @@
 - 确认本地环境配置了 GITEA 的 token
 - 根据用户提供的 paraflow 项目链接，clone 对应的 GITEA 仓库到本地
   - 测试环境链接如 `https://test.paraflow.biz/projects/<project-id>`，则仓库地址为 `https://gitea-testing.onrender.com/pfp-2/moxt-project-<project-id>`
-  - 生产环境链接如 `https://paraflow.biz/projects/<project-id>`，目前没有权限，无法 clone
+  - 生产环境链接如 `https://paraflow.com/projects/<project-id>`，目前没有权限，无法 clone
 - 将仓库 clone 到本地的 `~/` 根目录下
 - 列出目前 `~/` 根目录下所有 clone 过的 GITEA 仓库目录，都是以 `moxt-project` 开头的
 - 接下来可以在本地分析有关的内容了
