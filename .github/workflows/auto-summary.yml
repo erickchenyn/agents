@@ -53,6 +53,7 @@ jobs:
                   gsub(/^["'"'"']|["'"'"']$/, "")
                   description = $0
                 }
+                END { print description }
               ' "${skill_dir}SKILL.md")
 
               # If no description found in frontmatter, use skill name
