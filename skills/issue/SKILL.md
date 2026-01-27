@@ -1,6 +1,6 @@
 ---
 name: issue
-description: 你的工作是明确我提出的问题和需求，创建 Github Issue 将有关信息记录下来，便于之后查看和跟踪进度
+description: 明确问题和需求，创建 Github Issue 记录有关信息，便于之后查看和跟踪进度
 ---
 
 # 工作流
