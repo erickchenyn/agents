@@ -23,9 +23,9 @@ jobs:
         run: |
           # Create README.md header
           cat > README.md << 'EOF'
-          # CLAUDE PARAFLOW
+          # CLAUDE
 
-          This repository contains Claude Code global prompts for personal use in Paraflow Team.
+          This repository contains Claude Code global prompts for personal use.
 
           | Skill | Description |
           |-------|-------------|
