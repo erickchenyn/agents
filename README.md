@@ -7,8 +7,8 @@ This repository contains Claude Code global prompts for personal use.
 | commit | 提交代码、跟踪 PR 状态、完成代码合并 |
 | daily-todo | 查找 MOXT 项目中分配给我的未完成 Jira 任务，按类型分组显示 |
 | debug-repo | clone paraflow 项目的 git 仓库并进行分析 |
-| issue | 你的工作是明确我提出的问题和需求，创建 Github Issue 将有关信息记录下来，便于之后查看和跟踪进度 |
+| issue | 明确问题和需求，创建 Github Issue 记录有关信息，便于之后查看和跟踪进度 |
 
 ---
 
-*This document was automatically generated based on commit [`52577311bdac1fe2724893a54f798d742179c627`](https://github.com/erickchenyn/claude/commit/52577311bdac1fe2724893a54f798d742179c627).*
+*This document was automatically generated based on commit [`169c07cb369648d08dee226ef9244b754f38906a`](https://github.com/erickchenyn/claude/commit/169c07cb369648d08dee226ef9244b754f38906a).*
