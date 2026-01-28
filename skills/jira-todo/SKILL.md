@@ -1,5 +1,5 @@
 ---
-name: daily-todo
+name: jira-todo
 description: 查找 MOXT 项目中分配给我的未完成 Jira 任务，按类型分组显示
 allowed_tools:
   - "mcp__plugin_atlassian_atlassian__atlassianUserInfo"
