@@ -4,13 +4,24 @@
 # Source this file to get convenient workspace functions with auto-switch capability
 
 # Get the directory where this script is located
-WC_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -n "${BASH_SOURCE[0]}" ]]; then
+    WC_SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+else
+    # Fallback: assume we're in the skills/workspace directory
+    WC_SCRIPT_DIR="/home/wukong/.claude/skills/workspace"
+fi
 
 # Workspace create with auto-switch
 wcreate() {
+    # Check if this is a help request
+    if [[ "$*" == *"--help"* ]] || [[ "$*" == *"-h"* ]]; then
+        "$WC_SCRIPT_DIR/wc" create "$@"
+        return $?
+    fi
+
     local switch_cmd
     switch_cmd=$("$WC_SCRIPT_DIR/wc" create "$@")
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -eq 0 ]] && [[ -n "$switch_cmd" ]]; then
         # Execute the switch command
         eval "$switch_cmd"
     fi
@@ -18,9 +29,15 @@ wcreate() {
 
 # Workspace checkout with auto-switch
 wcheckout() {
+    # Check if this is a help request
+    if [[ "$*" == *"--help"* ]] || [[ "$*" == *"-h"* ]]; then
+        "$WC_SCRIPT_DIR/wc" checkout "$@"
+        return $?
+    fi
+
     local switch_cmd
     switch_cmd=$("$WC_SCRIPT_DIR/wc" checkout "$@")
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -eq 0 ]] && [[ -n "$switch_cmd" ]]; then
         # Execute the switch command
         eval "$switch_cmd"
     fi
