@@ -37,16 +37,36 @@ Subcommands:
     create      Create a new git worktree and branch for parallel development
     checkout    Switch to existing worktree or create new one for given branch/PR
 
+Create Options:
+    -h, --help              Show help message
+    -d, --dry-run           Preview mode, don't actually execute operations
+    -b, --branch <name>     Custom branch name (default: timestamp-based)
+    -u, --user <name>       Set git user name (default: erick.chen)
+    -e, --email <email>     Set git user email (default: erick.chen@paraflow.com)
+
+Checkout Options:
+    -h, --help              Show help message
+    -d, --dry-run           Preview mode, don't actually execute operations
+    -u, --user <name>       Set git user name (default: erick.chen)
+    -e, --email <email>     Set git user email (default: erick.chen@paraflow.com)
+
 Examples:
+    # Create operations
     wc create                           # Create new workspace with timestamp branch
+    wc create -d                        # Preview create operation
     wc create -b feature-auth           # Create workspace with specific branch name
+    wc create -d -b hotfix -u jane      # Preview create with custom branch and user
+
+    # Checkout operations
     wc checkout feature-login           # Checkout branch feature-login
     wc checkout 123                     # Checkout PR #123
     wc checkout -d chenyn/fix-bug       # Preview checkout operation
+    wc checkout -u john 456             # Checkout PR #456 with custom user
 
-For detailed help on subcommands, run:
-    wc create --help
-    wc checkout --help
+Environment Variables:
+    GIT_USER_NAME           Default git user name
+    GIT_USER_EMAIL          Default git user email
+    BRANCH_PREFIX           Default branch prefix for create
 
 EOF
 }
