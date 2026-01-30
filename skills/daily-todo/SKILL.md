@@ -33,6 +33,11 @@ allowed_tools:
 
 ### 3. 统一展示格式
 
+### 4. Slack 发送（可选）
+- 检查是否设置了 SLACK_BOT_TOKEN 环境变量
+- 如果设置了，将报告发送到指定的 Slack 频道
+- 使用 Slack API 发送格式化的消息
+
 ```
 # 📋 每日待办事项
 
@@ -106,6 +111,26 @@ allowed_tools:
 - 突出显示紧急或阻塞的任务
 ```
 
+## Slack 集成配置
+
+要启用 Slack 发送功能，需要配置以下环境变量：
+
+```bash
+# Slack Bot Token (必需)
+export SLACK_BOT_TOKEN="xoxb-your-bot-token"
+
+# Slack 频道 ID 或名称（可选，默认发送到 #general）
+export SLACK_CHANNEL="#daily-todos"
+```
+
+### Slack 消息格式
+
+发送到 Slack 的消息将采用以下格式：
+- 使用 Slack 的 Block Kit 格式
+- 保持 emoji 和结构化布局
+- 链接会自动展开
+- 支持折叠长列表以保持可读性
+
 ## 注意事项
 
 - **只显示有内容的分组，空的分组不展示**
@@ -116,3 +141,4 @@ allowed_tools:
 - 优先显示需要关注的内容，并在底部总结需要采取行动的项目
 - 提供直接链接便于快速访问
 - 统一的日期和时间格式展示
+- 如果配置了 SLACK_BOT_TOKEN，会自动发送到 Slack
