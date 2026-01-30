@@ -98,25 +98,11 @@ main() {
             ;;
         checkout)
             # 调用 workspace-checkout.sh
-            local checkout_script="$SCRIPT_DIR/../workspace-checkout/workspace-checkout.sh"
-            if [[ -f "$checkout_script" ]]; then
-                exec "$checkout_script" "$@"
-            else
-                print_error "workspace-checkout.sh not found at: $checkout_script"
-                print_info "Make sure workspace-checkout skill has the script installed"
-                exit 1
-            fi
+            exec "$SCRIPT_DIR/workspace-checkout.sh" "$@"
             ;;
         remove)
             # 调用 workspace-remove.sh
-            local remove_script="$SCRIPT_DIR/../workspace-remove/workspace-remove.sh"
-            if [[ -f "$remove_script" ]]; then
-                exec "$remove_script" "$@"
-            else
-                print_error "workspace-remove.sh not found at: $remove_script"
-                print_info "Make sure workspace-remove skill has the script installed"
-                exit 1
-            fi
+            exec "$SCRIPT_DIR/workspace-remove.sh" "$@"
             ;;
         -h|--help)
             show_help
