@@ -6,11 +6,11 @@ allowed_tools:
   - "mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql"
 ---
 
-- 确保安装了 Atlassian Plugin 插件才能使用 Atlassian MCP 工具
-- 先获取我的 Atlassian 账户信息
-- 然后用 JQL 查询 Jira Issue，查询条件：
-  - 项目为 MOXT
-  - Assignee 是本人
+- 检查是否安装了 Atlassian Plugin 插件并能使用 Atlassian MCP 工具
+- 获取我的 Atlassian 账户信息
+- 用 JQL 查询 Jira Issue，查询条件：
+  - Project 为 MOXT
+  - Assignee 是我本人
   - 状态为未完成 `not in (Done, Closed, Resolved, Validated)`
   - 类型为 `Story, SubTask, Task, Bug`
 - 根据不同的 Issue 类型分组，列出每个 Issue 的标题、状态和具体的链接

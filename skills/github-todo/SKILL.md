@@ -1,17 +1,17 @@
 ---
 name: github-todo
-description: 查询所有与我相关的 GitHub Issue 和 PR (assigned, authored, mentioned, review-requested)，按类型分组显示
-allowed_tools:
-  - "Bash"
+description: 查询所有与我相关的未完成的 GitHub Issue 和 PR，按类型分组显示
 ---
 
 查询所有与当前用户相关的 GitHub Issue 和 PR，包括：
+
 - 分配给我的 (assigned)
 - 我创建的 (authored)
 - 提到我的 (mentioned)
 - 请求我 review 的 (review-requested)
 
 执行步骤：
+
 1. 获取当前 GitHub 用户名
 2. 分别查询以下类型的 Issue 和 PR：
    - Issues assigned to me
@@ -24,6 +24,7 @@ allowed_tools:
 3. 去重并按类型分组展示
 
 输出格式：
+
 ```
 # 📋 GitHub Todo List
 
@@ -80,6 +81,7 @@ allowed_tools:
 ```
 
 注意事项：
+
 - 只显示状态为 open 的 Issue 和 PR
 - 自动去重避免重复显示
 - **只显示有内容的分组，空的分组不展示**
