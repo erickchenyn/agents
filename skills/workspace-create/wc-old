@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# wc - workspace create 的简化调用脚本
-# 调用完整的 workspace-create.sh 脚本
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/workspace-create.sh" "$@"
