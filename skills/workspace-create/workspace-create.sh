@@ -151,11 +151,14 @@ get_project_info() {
     TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 
     # 构建名称
-    WORKTREE_NAME="${PROJECT_NAME}-${TIMESTAMP}"
     if [[ -n "$CUSTOM_BRANCH" ]]; then
         BRANCH_NAME="$CUSTOM_BRANCH"
+        # 创建安全的目录名（替换 / 为 -）
+        local safe_branch_name=$(echo "$CUSTOM_BRANCH" | sed 's/\//-/g')
+        WORKTREE_NAME="${PROJECT_NAME}-${safe_branch_name}"
     else
         BRANCH_NAME="${BRANCH_PREFIX}/${TIMESTAMP}"
+        WORKTREE_NAME="${PROJECT_NAME}-${TIMESTAMP}"
     fi
     WORKTREE_PATH="${ROOT_DIR}/${WORKTREE_NAME}"
 
