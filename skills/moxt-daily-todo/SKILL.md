@@ -1,5 +1,5 @@
 ---
-name: daily-todo
+name: moxt-daily-todo
 description: 查询每日待办事项，包括 Jira 任务、GitHub Issues 和 GitHub PRs，统一展示所有需要关注的工作
 allowed_tools:
   - "mcp__plugin_atlassian_atlassian__atlassianUserInfo"
@@ -11,6 +11,7 @@ allowed_tools:
 ## 执行步骤
 
 ### 1. Jira 任务查询
+
 - 检查是否安装了 Atlassian Plugin 插件并能使用 Atlassian MCP 工具
 - 获取我的 Atlassian 账户信息
 - 用 JQL 查询 Jira Issue，查询条件：
@@ -20,6 +21,7 @@ allowed_tools:
   - 类型为 `Story, SubTask, Task, Bug`
 
 ### 2. GitHub 内容查询
+
 - 获取当前 GitHub 用户名
 - 分别查询以下类型的 Issue 和 PR：
   - Issues assigned to me
@@ -34,6 +36,7 @@ allowed_tools:
 ### 3. 统一展示格式
 
 ### 4. Slack 发送（可选）
+
 - 检查是否设置了 SLACK_BOT_TOKEN 环境变量
 - 如果设置了，将报告发送到指定的 Slack 频道
 - 使用 Slack API 发送格式化的消息
@@ -126,6 +129,7 @@ export SLACK_CHANNEL="#daily-todos"
 ### Slack 消息格式
 
 发送到 Slack 的消息将采用以下格式：
+
 - 使用 Slack 的 Block Kit 格式
 - 保持 emoji 和结构化布局
 - 链接会自动展开
