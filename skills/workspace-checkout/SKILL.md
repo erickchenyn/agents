@@ -24,6 +24,7 @@ description: 根据提供的分支名或 GitHub PR ID，查找本地对应的 wo
    - 显示新工作区路径和分支信息
    - 设置项目本地的 git user 信息为：名称 `erick.chen` 邮箱 `erick.chen@paraflow.com`
    - 执行 `q generate` 初始化代码
+   - 将主工作区下的 `.claude/settings.local.json` 拷贝一份到新工作区下
 
 4. **如果 worktree 已存在**
    - 直接切换到对应的工作区目录
@@ -31,3 +32,6 @@ description: 根据提供的分支名或 GitHub PR ID，查找本地对应的 wo
    - 确保项目本地的 git user 信息为：名称 `erick.chen` 邮箱 `erick.chen@paraflow.com`
    - 执行 `git pull` 更新代码
    - 执行 `q generate` 初始化代码
+
+5. **提示用户手动切换工作区**
+   - 提示用户切换工作区操作，如 `cd <根目录>/<新工作区目录> && cc`
