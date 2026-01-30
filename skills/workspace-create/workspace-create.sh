@@ -5,35 +5,15 @@
 
 set -e  # 遇到错误立即退出
 
+# 导入公共函数
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../common/workspace-common.sh"
+
 # 配置部分
 GIT_USER_NAME="${GIT_USER_NAME:-erick.chen}"
 GIT_USER_EMAIL="${GIT_USER_EMAIL:-erick.chen@paraflow.com}"
 BRANCH_PREFIX="${BRANCH_PREFIX:-chenyn}"
 DRY_RUN=false
-
-# 颜色输出
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# 日志函数
-log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-log_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-log_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-log_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
 
 # 显示帮助信息
 show_help() {
@@ -89,25 +69,8 @@ parse_args() {
 
 # 检查工作区环境
 check_environment() {
-    log_info "检查工作区环境..."
-
-    # 检查是否在 git 仓库中
-    if ! git rev-parse --git-dir > /dev/null 2>&1; then
-        log_error "当前目录不是 git 仓库"
-        exit 1
-    fi
-
-    # 检查是否在主工作区
-    local current_dir=$(pwd)
-    local main_worktree=$(git worktree list --porcelain | grep "^worktree " | head -1 | cut -d' ' -f2-)
-
-    if [[ "$current_dir" != "$main_worktree" ]]; then
-        log_error "当前不在主工作区中"
-        log_error "主工作区: $main_worktree"
-        log_error "当前目录: $current_dir"
-        log_error "请切换到主工作区后重新运行"
-        exit 1
-    fi
+    # 使用公共环境检查函数
+    check_workspace_environment_zh "workspace-create"
 
     # 检查是否有未提交的更改
     if ! git diff --quiet || ! git diff --staged --quiet; then

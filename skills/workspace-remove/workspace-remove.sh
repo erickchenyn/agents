@@ -5,32 +5,12 @@
 
 set -e  # 遇到错误立即退出
 
+# 导入公共函数
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../common/workspace-common.sh"
+
 # 配置部分
 DRY_RUN=false
-
-# 颜色输出
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# 打印函数
-print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
 
 # 显示帮助信息
 show_help() {
@@ -79,60 +59,13 @@ parse_args() {
 
 # 检查环境
 check_environment() {
-    print_info "Checking environment..."
+    # 使用公共环境检查函数
+    check_workspace_environment "workspace-remove"
 
-    # 检查是否在 git 仓库中
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        print_error "Not inside a git repository"
-        exit 1
-    fi
-
-    # 检查是否在主工作区
-    local main_worktree=$(git worktree list --porcelain | grep -A1 "^worktree" | head -1 | cut -d' ' -f2-)
-    local current_dir=$(pwd)
-
-    if [[ "$current_dir" != "$main_worktree" ]]; then
-        print_error "Not in main worktree. Please switch to main worktree first: $main_worktree"
-        exit 1
-    fi
-
-    # 检查 GitHub CLI（可选）
-    if command -v gh >/dev/null 2>&1; then
-        GH_AVAILABLE=true
-    else
-        GH_AVAILABLE=false
-        print_warning "GitHub CLI not available, PR status checks will be skipped"
-    fi
-
-    print_success "Environment check passed"
+    # 检查 GitHub CLI 可用性
+    check_gh_available
 }
 
-# 获取所有非主工作区
-get_worktrees() {
-    local worktrees=()
-    local current_worktree=""
-    local current_branch=""
-
-    while IFS= read -r line; do
-        if [[ "$line" =~ ^worktree ]]; then
-            current_worktree=$(echo "$line" | cut -d' ' -f2-)
-        elif [[ "$line" =~ ^branch ]]; then
-            current_branch=$(echo "$line" | sed 's/^branch refs\/heads\///')
-        elif [[ "$line" =~ ^bare ]] || [[ -z "$line" ]]; then
-            # Skip bare repository or empty line
-            if [[ ! "$line" =~ ^bare ]] && [[ -n "$current_worktree" ]] && [[ -n "$current_branch" ]]; then
-                # Skip main worktree (current directory)
-                if [[ "$current_worktree" != "$(pwd)" ]]; then
-                    worktrees+=("$current_worktree|$current_branch")
-                fi
-            fi
-            current_worktree=""
-            current_branch=""
-        fi
-    done < <(git worktree list --porcelain)
-
-    printf '%s\n' "${worktrees[@]}"
-}
 
 # 检查工作区状态
 check_worktree_safety() {
