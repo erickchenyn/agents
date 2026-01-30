@@ -11,7 +11,8 @@ This repository contains Claude Code global prompts for personal use.
 | repo-debug | clone paraflow 项目的 git 仓库并进行分析 |
 | workspace-checkout | 根据提供的分支名或 GitHub PR ID，查找本地对应的 worktree。如果不存在则创建新的 worktree，如果存在则直接切换 |
 | workspace-create | 基于当前项目的 origin/main 创建一个新的 git worktree 和分支，用于并行开发 |
+| workspace-remove | 移除指定的 git worktree，并将其 Claude 配置合并回主工作区以保持记忆延续 |
 
 ---
 
-*This document was automatically generated based on commit [`1bfa449899fa3d1bdbadac91074e8f6a711c983b`](https://github.com/erickchenyn/claude/commit/1bfa449899fa3d1bdbadac91074e8f6a711c983b).*
+*This document was automatically generated based on commit [`2126ae465c2e821612cbb5d451d66b08d536536a`](https://github.com/erickchenyn/claude/commit/2126ae465c2e821612cbb5d451d66b08d536536a).*
