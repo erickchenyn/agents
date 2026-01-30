@@ -45,7 +45,6 @@ Arguments:
 Options:
     -h, --help          Show this help message
     -d, --dry-run       Preview mode, don't actually execute operations
-    -f, --force         Skip safety checks and force removal
     -a, --all           Remove all non-main worktrees
     -i, --interactive   Interactive mode with worktree selection (default)
 
@@ -54,7 +53,6 @@ Examples:
     $0 /path/to/project-branch          # Remove specific worktree
     $0 -a                              # Remove all non-main worktrees
     $0 -d -i                           # Preview interactive removal
-    $0 -f /path/to/project-branch       # Force remove without checks
 
 EOF
 }
@@ -62,7 +60,6 @@ EOF
 # 解析命令行参数
 parse_args() {
     WORKTREE_PATH=""
-    FORCE_REMOVE=false
     REMOVE_ALL=false
     INTERACTIVE_MODE=true
 
@@ -74,10 +71,6 @@ parse_args() {
                 ;;
             -d|--dry-run)
                 DRY_RUN=true
-                shift
-                ;;
-            -f|--force)
-                FORCE_REMOVE=true
                 shift
                 ;;
             -a|--all)
@@ -336,18 +329,7 @@ remove_worktree() {
         print_success "Removed worktree: $worktree_path"
     else
         print_error "Failed to remove worktree: $worktree_path"
-        if [[ "$FORCE_REMOVE" == "true" ]]; then
-            print_warning "Attempting force removal..."
-            if git worktree remove --force "$worktree_path"; then
-                print_success "Force removed worktree: $worktree_path"
-            else
-                print_error "Force removal also failed"
-                return 1
-            fi
-        else
-            print_info "Use --force to attempt force removal"
-            return 1
-        fi
+        return 1
     fi
 }
 
@@ -385,45 +367,49 @@ main() {
         exit 0
     fi
 
-    # Safety checks unless forced
-    if [[ "$FORCE_REMOVE" != "true" ]]; then
-        print_info "Performing safety checks..."
-        local unsafe_worktrees=()
-
-        for worktree in "${worktrees_to_remove[@]}"; do
-            local path=$(echo "$worktree" | cut -d'|' -f1)
-            local branch=$(echo "$worktree" | cut -d'|' -f2)
-
-            local safety_result
-            safety_result=$(check_worktree_safety "$path" "$branch")
-            local is_safe=$(echo "$safety_result" | cut -d'|' -f1)
-            local report=$(echo "$safety_result" | cut -d'|' -f2-)
-
-            echo "Worktree: $(basename "$path") ($branch)"
-            echo -e "$report"
-            echo ""
-
-            if [[ "$is_safe" != "true" ]]; then
-                unsafe_worktrees+=("$worktree")
-            fi
-        done
-
-        if [[ ${#unsafe_worktrees[@]} -gt 0 ]]; then
-            print_warning "Found ${#unsafe_worktrees[@]} worktree(s) with potential risks"
-            echo "Continue with removal? [y/N]"
-            read -r confirm
-            if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-                print_info "Removal cancelled"
-                exit 0
-            fi
-        fi
-    fi
-
-    # Execute removal
-    local success_count=0
-    local total_count=${#worktrees_to_remove[@]}
+    # Safety checks - show status but continue with automatic filtering
+    print_info "Performing safety checks..."
 
     for worktree in "${worktrees_to_remove[@]}"; do
+        local path=$(echo "$worktree" | cut -d'|' -f1)
+        local branch=$(echo "$worktree" | cut -d'|' -f2)
+
+        local safety_result
+        safety_result=$(check_worktree_safety "$path" "$branch")
+        local is_safe=$(echo "$safety_result" | cut -d'|' -f1)
+        local report=$(echo "$safety_result" | cut -d'|' -f2-)
+
+        echo "Worktree: $(basename "$path") ($branch)"
+        echo -e "$report"
+        echo ""
+    done
+
+    # Execute removal - only for safe worktrees
+    local success_count=0
+    local skipped_count=0
+    local total_count=${#worktrees_to_remove[@]}
+    local safe_worktrees=()
+    local unsafe_worktrees=()
+
+    # Separate safe and unsafe worktrees
+    for worktree in "${worktrees_to_remove[@]}"; do
+        local path=$(echo "$worktree" | cut -d'|' -f1)
+        local branch=$(echo "$worktree" | cut -d'|' -f2)
+
+        local safety_result
+        safety_result=$(check_worktree_safety "$path" "$branch")
+        local is_safe=$(echo "$safety_result" | cut -d'|' -f1)
+        local report=$(echo "$safety_result" | cut -d'|' -f2-)
+
+        if [[ "$is_safe" == "true" ]]; then
+            safe_worktrees+=("$worktree")
+        else
+            unsafe_worktrees+=("$worktree|$report")
+        fi
+    done
+
+    # Remove safe worktrees
+    for worktree in "${safe_worktrees[@]}"; do
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
@@ -432,11 +418,30 @@ main() {
         fi
     done
 
-    # Report results
-    print_success "Removal completed: $success_count/$total_count worktrees removed"
+    # Report skipped unsafe worktrees
+    for unsafe_entry in "${unsafe_worktrees[@]}"; do
+        local worktree=$(echo "$unsafe_entry" | cut -d'|' -f1-2)
+        local path=$(echo "$worktree" | cut -d'|' -f1)
+        local branch=$(echo "$worktree" | cut -d'|' -f2)
+        local reasons=$(echo "$unsafe_entry" | cut -d'|' -f3-)
 
-    if [[ "$success_count" -gt 0 ]]; then
-        print_info "Remaining worktrees:"
+        print_warning "Skipped unsafe worktree: $(basename "$path") ($branch)"
+        echo -e "  Reasons: $reasons" | sed 's/\\n/\n  /g'
+        skipped_count=$((skipped_count + 1))
+    done
+
+    # Report final results
+    print_success "Removal completed: $success_count removed, $skipped_count skipped (unsafe)"
+
+    if [[ "$skipped_count" -gt 0 ]]; then
+        print_info "To remove unsafe worktrees, resolve the safety issues first:"
+        print_info "- Commit or stash uncommitted changes"
+        print_info "- Push unpushed commits to remote"
+        print_info "- Close or merge open PRs"
+    fi
+
+    if [[ "$success_count" -gt 0 ]] || [[ "$skipped_count" -gt 0 ]]; then
+        print_info "Current worktrees:"
         git worktree list
     fi
 }

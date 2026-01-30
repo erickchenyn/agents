@@ -55,7 +55,6 @@ Checkout Options:
 Remove Options:
     -h, --help              Show help message
     -d, --dry-run           Preview mode, don't actually execute operations
-    -f, --force             Skip safety checks and force removal
     -a, --all               Remove all non-main worktrees
     -i, --interactive       Interactive mode with worktree selection (default)
 
