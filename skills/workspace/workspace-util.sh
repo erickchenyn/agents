@@ -192,3 +192,11 @@ has_unpushed_commits() {
     unpushed_count=$(cd "$worktree_path" && git rev-list --count "@{u}".. 2>/dev/null || echo "0")
     [[ "$unpushed_count" -gt 0 ]]
 }
+
+# 输出工作区切换命令
+show_worktree_switch_info() {
+    local worktree_path="$1"
+
+    # 直接输出切换命令，用户可以用 eval $(wc ...) 方式调用
+    echo "cd \"$worktree_path\" && cc"
+}

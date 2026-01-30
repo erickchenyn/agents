@@ -256,12 +256,7 @@ main() {
         print_success "Found existing worktree: $existing_worktree"
         setup_worktree "$existing_worktree" "$branch_name"
 
-        print_success "Switched to existing worktree"
-        print_info "Worktree path: $existing_worktree"
-        print_info "Branch: $branch_name"
-        print_info ""
-        print_info "To switch to this worktree, run:"
-        print_info "  cd \"$existing_worktree\" && cc"
+        show_worktree_switch_info "$existing_worktree"
     else
         print_info "No existing worktree found, creating new one..."
         local new_worktree
@@ -269,11 +264,8 @@ main() {
         setup_worktree "$new_worktree" "$branch_name"
 
         print_success "Created and switched to new worktree"
-        print_info "Worktree path: $new_worktree"
-        print_info "Branch: $branch_name"
-        print_info ""
-        print_info "To switch to this worktree, run:"
-        print_info "  cd \"$new_worktree\" && cc"
+
+        show_worktree_switch_info "$new_worktree"
     fi
 }
 

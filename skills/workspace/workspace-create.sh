@@ -225,9 +225,9 @@ show_completion() {
     log_info "  路径: $WORKTREE_PATH"
     log_info "  分支: $BRANCH_NAME"
     echo
-    log_info "切换到新工作区:"
-    echo -e "${GREEN}  cd $WORKTREE_PATH && cc${NC}"
-    echo
+
+    # 直接输出切换命令，用户可以用 eval $(wc create ...) 方式调用
+    echo "cd \"$WORKTREE_PATH\" && cc"
 }
 
 # 清理函数（错误时调用）
