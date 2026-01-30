@@ -1,7 +1,93 @@
 #!/bin/bash
 
-# wc - workspace create 的简化调用脚本
-# 调用完整的 workspace-create.sh 脚本
+# wc - Unified Workspace Management Tool
+# Supports both workspace creation and checkout operations
 
+set -e
+
+# 获取脚本目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/workspace-create.sh" "$@"
+
+# 颜色输出
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+print_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# 显示帮助信息
+show_help() {
+    cat << EOF
+wc - Workspace Management Tool
+
+Usage:
+    wc create [OPTIONS]                 Create new workspace
+    wc checkout [OPTIONS] <branch|pr>   Checkout/create workspace for branch or PR
+    wc -h, --help                       Show this help
+
+Subcommands:
+    create      Create a new git worktree and branch for parallel development
+    checkout    Switch to existing worktree or create new one for given branch/PR
+
+Examples:
+    wc create                           # Create new workspace with timestamp branch
+    wc create -b feature-auth           # Create workspace with specific branch name
+    wc checkout feature-login           # Checkout branch feature-login
+    wc checkout 123                     # Checkout PR #123
+    wc checkout -d chenyn/fix-bug       # Preview checkout operation
+
+For detailed help on subcommands, run:
+    wc create --help
+    wc checkout --help
+
+EOF
+}
+
+# 主函数
+main() {
+    if [[ $# -eq 0 ]]; then
+        show_help
+        exit 1
+    fi
+
+    local subcommand="$1"
+    shift
+
+    case "$subcommand" in
+        create)
+            # 调用 workspace-create.sh
+            exec "$SCRIPT_DIR/workspace-create.sh" "$@"
+            ;;
+        checkout)
+            # 调用 workspace-checkout.sh
+            local checkout_script="$SCRIPT_DIR/../workspace-checkout/workspace-checkout.sh"
+            if [[ -f "$checkout_script" ]]; then
+                exec "$checkout_script" "$@"
+            else
+                print_error "workspace-checkout.sh not found at: $checkout_script"
+                print_info "Make sure workspace-checkout skill has the script installed"
+                exit 1
+            fi
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            print_error "Unknown subcommand: $subcommand"
+            print_info "Available subcommands: create, checkout"
+            show_help
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
