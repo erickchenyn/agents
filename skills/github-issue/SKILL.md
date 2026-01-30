@@ -1,5 +1,5 @@
 ---
-name: issue
+name: moxt-github-issue
 description: 明确问题和需求，创建 Github Issue 记录有关信息，便于之后查看和跟踪进度
 ---
 
