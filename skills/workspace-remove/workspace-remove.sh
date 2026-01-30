@@ -42,11 +42,9 @@ Usage: $0 [OPTIONS]
 Options:
     -h, --help          Show this help message
     -d, --dry-run       Preview mode, don't actually execute operations
-    -i, --interactive   Interactive mode with worktree selection
 
 Examples:
     $0                  # Remove all safe worktrees, skip unsafe ones
-    $0 -i               # Interactive mode, select worktrees to remove
     $0 -d               # Preview removal of all worktrees
 
 EOF
@@ -54,8 +52,6 @@ EOF
 
 # 解析命令行参数
 parse_args() {
-    INTERACTIVE_MODE=false  # 默认为批量模式
-
     while [[ $# -gt 0 ]]; do
         case $1 in
             -h|--help)
@@ -66,10 +62,6 @@ parse_args() {
                 DRY_RUN=true
                 shift
                 ;;
-            -i|--interactive)
-                INTERACTIVE_MODE=true
-                shift
-                ;;
             -*)
                 print_error "Unknown option: $1"
                 show_help
@@ -77,7 +69,7 @@ parse_args() {
                 ;;
             *)
                 print_error "Unexpected argument: $1"
-                print_info "Use -i for interactive mode or no arguments for batch removal"
+                print_info "No arguments needed, script processes all worktrees automatically"
                 show_help
                 exit 1
                 ;;
@@ -198,68 +190,6 @@ check_worktree_safety() {
     echo -e "$is_safe|$safety_report"
 }
 
-# 交互式选择工作区
-interactive_select_worktrees() {
-    local worktrees
-    mapfile -t worktrees < <(get_worktrees)
-
-    if [[ ${#worktrees[@]} -eq 0 ]]; then
-        print_warning "No additional worktrees found"
-        return 1
-    fi
-
-    print_info "Available worktrees:"
-    echo ""
-
-    local i=1
-    for worktree in "${worktrees[@]}"; do
-        local path=$(echo "$worktree" | cut -d'|' -f1)
-        local branch=$(echo "$worktree" | cut -d'|' -f2)
-        echo "  [$i] $(basename "$path") ($branch)"
-        echo "      $path"
-        i=$((i + 1))
-    done
-
-    echo ""
-    echo "Enter selection (e.g., '1', '1,3', '1-3', or 'all'):"
-    read -r selection
-
-    local selected_indices=()
-
-    if [[ "$selection" == "all" ]]; then
-        selected_indices=($(seq 1 ${#worktrees[@]}))
-    elif [[ "$selection" =~ ^[0-9,-]+$ ]]; then
-        # Parse selection
-        IFS=',' read -ra parts <<< "$selection"
-        for part in "${parts[@]}"; do
-            if [[ "$part" =~ ^([0-9]+)-([0-9]+)$ ]]; then
-                # Range selection
-                local start=${BASH_REMATCH[1]}
-                local end=${BASH_REMATCH[2]}
-                selected_indices+=($(seq "$start" "$end"))
-            elif [[ "$part" =~ ^[0-9]+$ ]]; then
-                # Single selection
-                selected_indices+=("$part")
-            fi
-        done
-    else
-        print_error "Invalid selection format"
-        return 1
-    fi
-
-    # Validate and collect selected worktrees
-    local selected_worktrees=()
-    for index in "${selected_indices[@]}"; do
-        if [[ "$index" -ge 1 && "$index" -le ${#worktrees[@]} ]]; then
-            selected_worktrees+=("${worktrees[$((index-1))]}")
-        else
-            print_error "Invalid selection: $index"
-            return 1
-        fi
-    done
-
-    printf '%s\n' "${selected_worktrees[@]}"
-}
 
 # 备份和合并 Claude 配置
 backup_claude_settings() {
@@ -329,14 +259,9 @@ main() {
 
     local worktrees_to_remove=()
 
-    if [[ "$INTERACTIVE_MODE" == "true" ]]; then
-        # Interactive selection
-        mapfile -t worktrees_to_remove < <(interactive_select_worktrees)
-    else
-        # Batch mode - process all non-main worktrees
-        mapfile -t worktrees_to_remove < <(get_worktrees)
-        print_info "Batch mode: processing all non-main worktrees"
-    fi
+    # Process all non-main worktrees
+    mapfile -t worktrees_to_remove < <(get_worktrees)
+    print_info "Processing all non-main worktrees"
 
     if [[ ${#worktrees_to_remove[@]} -eq 0 ]]; then
         print_warning "No worktrees selected for removal"

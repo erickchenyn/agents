@@ -55,7 +55,6 @@ Checkout Options:
 Remove Options:
     -h, --help              Show help message
     -d, --dry-run           Preview mode, don't actually execute operations
-    -i, --interactive       Interactive mode with worktree selection
 
 Examples:
     # Create operations
@@ -72,7 +71,6 @@ Examples:
 
     # Remove operations
     wc remove                           # Remove all safe worktrees, skip unsafe ones
-    wc remove -i                        # Interactive mode, select worktrees to remove
     wc remove -d                        # Preview removal of all worktrees
 
 Environment Variables:
