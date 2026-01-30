@@ -60,7 +60,7 @@ Examples:
     # Checkout operations
     wc checkout feature-login           # Checkout branch feature-login
     wc checkout 123                     # Checkout PR #123
-    wc checkout -d chenyn/fix-bug       # Preview checkout operation
+    wc checkout -d fix-bug-issue        # Preview checkout operation
     wc checkout -u john 456             # Checkout PR #456 with custom user
 
 Environment Variables:
