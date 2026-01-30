@@ -37,31 +37,24 @@ show_help() {
     cat << EOF
 workspace-remove.sh - Remove git worktree and merge Claude settings
 
-Usage: $0 [OPTIONS] [worktree-path]
-
-Arguments:
-    worktree-path       Specific worktree path to remove (optional)
+Usage: $0 [OPTIONS]
 
 Options:
     -h, --help          Show this help message
     -d, --dry-run       Preview mode, don't actually execute operations
-    -a, --all           Remove all non-main worktrees
-    -i, --interactive   Interactive mode with worktree selection (default)
+    -i, --interactive   Interactive mode with worktree selection
 
 Examples:
-    $0                                  # Interactive mode, select worktrees
-    $0 /path/to/project-branch          # Remove specific worktree
-    $0 -a                              # Remove all non-main worktrees
-    $0 -d -i                           # Preview interactive removal
+    $0                  # Remove all safe worktrees, skip unsafe ones
+    $0 -i               # Interactive mode, select worktrees to remove
+    $0 -d               # Preview removal of all worktrees
 
 EOF
 }
 
 # 解析命令行参数
 parse_args() {
-    WORKTREE_PATH=""
-    REMOVE_ALL=false
-    INTERACTIVE_MODE=true
+    INTERACTIVE_MODE=false  # 默认为批量模式
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -71,11 +64,6 @@ parse_args() {
                 ;;
             -d|--dry-run)
                 DRY_RUN=true
-                shift
-                ;;
-            -a|--all)
-                REMOVE_ALL=true
-                INTERACTIVE_MODE=false
                 shift
                 ;;
             -i|--interactive)
@@ -88,14 +76,10 @@ parse_args() {
                 exit 1
                 ;;
             *)
-                if [[ -z "$WORKTREE_PATH" ]]; then
-                    WORKTREE_PATH="$1"
-                    INTERACTIVE_MODE=false
-                else
-                    print_error "Too many arguments. Expected one worktree path."
-                    exit 1
-                fi
-                shift
+                print_error "Unexpected argument: $1"
+                print_info "Use -i for interactive mode or no arguments for batch removal"
+                show_help
+                exit 1
                 ;;
         esac
     done
@@ -345,21 +329,13 @@ main() {
 
     local worktrees_to_remove=()
 
-    if [[ -n "$WORKTREE_PATH" ]]; then
-        # Specific worktree path provided
-        local branch_name
-        if branch_name=$(cd "$WORKTREE_PATH" && git branch --show-current 2>/dev/null); then
-            worktrees_to_remove+=("$WORKTREE_PATH|$branch_name")
-        else
-            print_error "Cannot determine branch name for: $WORKTREE_PATH"
-            exit 1
-        fi
-    elif [[ "$REMOVE_ALL" == "true" ]]; then
-        # Remove all non-main worktrees
-        mapfile -t worktrees_to_remove < <(get_worktrees)
-    elif [[ "$INTERACTIVE_MODE" == "true" ]]; then
+    if [[ "$INTERACTIVE_MODE" == "true" ]]; then
         # Interactive selection
         mapfile -t worktrees_to_remove < <(interactive_select_worktrees)
+    else
+        # Batch mode - process all non-main worktrees
+        mapfile -t worktrees_to_remove < <(get_worktrees)
+        print_info "Batch mode: processing all non-main worktrees"
     fi
 
     if [[ ${#worktrees_to_remove[@]} -eq 0 ]]; then
