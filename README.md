@@ -9,7 +9,9 @@ This repository contains Claude Code global prompts for personal use.
 | issue | 明确问题和需求，创建 Github Issue 记录有关信息，便于之后查看和跟踪进度 |
 | jira-todo | 查找 MOXT 项目中分配给我的未完成 Jira 任务，按类型分组显示 |
 | repo-debug | clone paraflow 项目的 git 仓库并进行分析 |
+| workspace-checkout | 根据提供的分支名或 GitHub PR ID，查找本地对应的 worktree。如果不存在则创建新的 worktree，如果存在则直接切换 |
+| workspace-create | 基于当前项目的 origin/main 创建一个新的 git worktree 和分支，用于并行开发 |
 
 ---
 
-*This document was automatically generated based on commit [`8a32e0a71ae7f937207f7d40f7828aaabad69801`](https://github.com/erickchenyn/claude/commit/8a32e0a71ae7f937207f7d40f7828aaabad69801).*
+*This document was automatically generated based on commit [`1bfa449899fa3d1bdbadac91074e8f6a711c983b`](https://github.com/erickchenyn/claude/commit/1bfa449899fa3d1bdbadac91074e8f6a711c983b).*
