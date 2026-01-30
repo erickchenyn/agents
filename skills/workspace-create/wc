@@ -31,11 +31,13 @@ wc - Workspace Management Tool
 Usage:
     wc create [OPTIONS]                 Create new workspace
     wc checkout [OPTIONS] <branch|pr>   Checkout/create workspace for branch or PR
+    wc remove [OPTIONS] [worktree]      Remove worktree and merge Claude settings
     wc -h, --help                       Show this help
 
 Subcommands:
     create      Create a new git worktree and branch for parallel development
     checkout    Switch to existing worktree or create new one for given branch/PR
+    remove      Remove worktree with safety checks and settings backup
 
 Create Options:
     -h, --help              Show help message
@@ -50,6 +52,13 @@ Checkout Options:
     -u, --user <name>       Set git user name (default: erick.chen)
     -e, --email <email>     Set git user email (default: erick.chen@paraflow.com)
 
+Remove Options:
+    -h, --help              Show help message
+    -d, --dry-run           Preview mode, don't actually execute operations
+    -f, --force             Skip safety checks and force removal
+    -a, --all               Remove all non-main worktrees
+    -i, --interactive       Interactive mode with worktree selection (default)
+
 Examples:
     # Create operations
     wc create                           # Create new workspace with timestamp branch
@@ -62,6 +71,12 @@ Examples:
     wc checkout 123                     # Checkout PR #123
     wc checkout -d fix-bug-issue        # Preview checkout operation
     wc checkout -u john 456             # Checkout PR #456 with custom user
+
+    # Remove operations
+    wc remove                           # Interactive mode, select worktrees to remove
+    wc remove -a                        # Remove all non-main worktrees
+    wc remove /path/to/worktree         # Remove specific worktree
+    wc remove -d -i                     # Preview interactive removal
 
 Environment Variables:
     GIT_USER_NAME           Default git user name
@@ -97,13 +112,24 @@ main() {
                 exit 1
             fi
             ;;
+        remove)
+            # 调用 workspace-remove.sh
+            local remove_script="$SCRIPT_DIR/../workspace-remove/workspace-remove.sh"
+            if [[ -f "$remove_script" ]]; then
+                exec "$remove_script" "$@"
+            else
+                print_error "workspace-remove.sh not found at: $remove_script"
+                print_info "Make sure workspace-remove skill has the script installed"
+                exit 1
+            fi
+            ;;
         -h|--help)
             show_help
             exit 0
             ;;
         *)
             print_error "Unknown subcommand: $subcommand"
-            print_info "Available subcommands: create, checkout"
+            print_info "Available subcommands: create, checkout, remove"
             show_help
             exit 1
             ;;
