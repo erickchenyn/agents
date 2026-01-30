@@ -7,7 +7,7 @@ set -e  # 遇到错误立即退出
 
 # 导入公共函数
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../common/workspace-common.sh"
+source "$SCRIPT_DIR/workspace-util.sh"
 
 # 配置部分
 DRY_RUN=false
