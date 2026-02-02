@@ -27,6 +27,60 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# 检查 git 用户配置
+check_git_config() {
+    log_info "检查 git 用户配置..."
+
+    # 分别检查本地和全局配置
+    local git_user_name_local=$(git config --local user.name 2>/dev/null || echo "")
+    local git_user_email_local=$(git config --local user.email 2>/dev/null || echo "")
+    local git_user_name_global=$(git config --global user.name 2>/dev/null || echo "")
+    local git_user_email_global=$(git config --global user.email 2>/dev/null || echo "")
+
+    # 确定最终使用的配置（本地优先，git config 命令的默认行为）
+    local git_user_name=$(git config user.name 2>/dev/null || echo "")
+    local git_user_email=$(git config user.email 2>/dev/null || echo "")
+
+    # 确定配置来源
+    local config_source="unknown"
+    local name_is_local=false
+    local email_is_local=false
+
+    if [[ -n "$git_user_name_local" ]]; then
+        name_is_local=true
+    fi
+
+    if [[ -n "$git_user_email_local" ]]; then
+        email_is_local=true
+    fi
+
+    if [[ "$name_is_local" == true && "$email_is_local" == true ]]; then
+        config_source="local"
+    elif [[ "$name_is_local" == false && "$email_is_local" == false ]]; then
+        config_source="global"
+    else
+        config_source="mixed (local + global)"
+    fi
+
+    if [[ -z "$git_user_name" ]]; then
+        log_error "Git user.name 未设置"
+        log_error "请使用以下命令之一设置:"
+        log_error "  本地设置: git config user.name \"Your Name\""
+        log_error "  全局设置: git config --global user.name \"Your Name\""
+        exit 1
+    fi
+
+    if [[ -z "$git_user_email" ]]; then
+        log_error "Git user.email 未设置"
+        log_error "请使用以下命令之一设置:"
+        log_error "  本地设置: git config user.email \"your.email@example.com\""
+        log_error "  全局设置: git config --global user.email \"your.email@example.com\""
+        exit 1
+    fi
+
+    log_success "Git 用户配置检查通过 ($config_source): $git_user_name <$git_user_email>"
+}
+
 # 检查基础环境
 check_workspace_environment() {
     local script_name="${1:-workspace script}"
@@ -50,6 +104,9 @@ check_workspace_environment() {
         log_error "请切换到主工作区后重新运行"
         exit 1
     fi
+
+    # 检查 git 用户配置
+    check_git_config
 
     log_success "环境检查通过"
 }
