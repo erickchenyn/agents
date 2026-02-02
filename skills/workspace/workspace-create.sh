@@ -10,8 +10,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/workspace-util.sh"
 
 # 配置部分
-GIT_USER_NAME="${GIT_USER_NAME:-erick.chen}"
-GIT_USER_EMAIL="${GIT_USER_EMAIL:-erick.chen@paraflow.com}"
 BRANCH_PREFIX="${BRANCH_PREFIX:-chenyn}"
 DRY_RUN=false
 
@@ -23,12 +21,18 @@ show_help() {
 选项:
     -h, --help              显示帮助信息
     -d, --dry-run           只显示将要执行的操作，不实际执行
-    -u, --user <name>       设置 git 用户名（默认: $GIT_USER_NAME）
-    -e, --email <email>     设置 git 邮箱（默认: $GIT_USER_EMAIL）
 
 示例:
-    $0                      # 使用默认设置创建工作区
+    $0                      # 创建工作区
     $0 -d                   # 预览模式，不实际执行
+
+注意:
+    需要预先设置 git 用户配置（本地或全局皆可）:
+    git config user.name "Your Name" (本地设置)
+    git config user.email "your.email@example.com" (本地设置)
+    或
+    git config --global user.name "Your Name" (全局设置)
+    git config --global user.email "your.email@example.com" (全局设置)
 EOF
 }
 
@@ -43,14 +47,6 @@ parse_args() {
             -d|--dry-run)
                 DRY_RUN=true
                 shift
-                ;;
-            -u|--user)
-                GIT_USER_NAME="$2"
-                shift 2
-                ;;
-            -e|--email)
-                GIT_USER_EMAIL="$2"
-                shift 2
                 ;;
             *)
                 log_error "未知参数: $1"
@@ -160,14 +156,18 @@ create_worktree() {
 initialize_workspace() {
     log_info "初始化新工作区..."
 
+    # 在主工作区获取 git 用户信息（优先本地配置，再全局配置）
+    local git_user_name=$(git config user.name)
+    local git_user_email=$(git config user.email)
+
     if [[ "$DRY_RUN" == false ]]; then
         # 进入新工作区
         cd "$WORKTREE_PATH"
 
-        # 设置 git 用户信息
-        git config user.name "$GIT_USER_NAME"
-        git config user.email "$GIT_USER_EMAIL"
-        log_success "Git 用户信息设置完成"
+        # 设置 git 用户信息到新工作区
+        git config user.name "$git_user_name"
+        git config user.email "$git_user_email"
+        log_success "Git 用户信息设置完成: $git_user_name <$git_user_email>"
 
         # 检查是否存在 q 命令
         if command -v q > /dev/null 2>&1; then
@@ -198,7 +198,7 @@ initialize_workspace() {
 
     else
         log_info "[DRY RUN] 将在新工作区中执行:"
-        log_info "[DRY RUN]   - 设置 git 用户: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+        log_info "[DRY RUN]   - 设置 git 用户: $git_user_name <$git_user_email>"
         log_info "[DRY RUN]   - 执行: q generate"
         log_info "[DRY RUN]   - 拷贝: .claude/settings.local.json"
     fi

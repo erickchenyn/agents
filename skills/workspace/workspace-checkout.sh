@@ -10,8 +10,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/workspace-util.sh"
 
 # 配置部分
-GIT_USER_NAME="${GIT_USER_NAME:-erick.chen}"
-GIT_USER_EMAIL="${GIT_USER_EMAIL:-erick.chen@paraflow.com}"
 DRY_RUN=false
 
 # 显示帮助信息
@@ -27,14 +25,19 @@ Arguments:
 Options:
     -h, --help          Show this help message
     -d, --dry-run       Preview mode, don't actually execute operations
-    -u, --user <name>   Set git user name (default: $GIT_USER_NAME)
-    -e, --email <email> Set git user email (default: $GIT_USER_EMAIL)
 
 Examples:
     $0 feature-auth                    # Checkout branch feature-auth
     $0 123                            # Checkout PR #123
     $0 -d chenyn/fix-bug              # Preview checkout operation
-    $0 -u "john" -e "john@example.com" 456  # Custom git config
+
+Note:
+    Git user configuration is required (local or global):
+    git config user.name "Your Name" (local)
+    git config user.email "your.email@example.com" (local)
+    or
+    git config --global user.name "Your Name" (global)
+    git config --global user.email "your.email@example.com" (global)
 
 EOF
 }
@@ -52,14 +55,6 @@ parse_args() {
             -d|--dry-run)
                 DRY_RUN=true
                 shift
-                ;;
-            -u|--user)
-                GIT_USER_NAME="$2"
-                shift 2
-                ;;
-            -e|--email)
-                GIT_USER_EMAIL="$2"
-                shift 2
                 ;;
             -*)
                 log_error "Unknown option: $1"
@@ -194,11 +189,15 @@ setup_worktree() {
 
     log_info "Setting up worktree: $worktree_path"
 
+    # 获取 git 用户信息（优先本地配置，再全局配置）
+    local git_user_name=$(git config user.name)
+    local git_user_email=$(git config user.email)
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log_warning "[DRY RUN] Would setup worktree:"
         log_warning "  cd \"$worktree_path\""
-        log_warning "  git config user.name \"$GIT_USER_NAME\""
-        log_warning "  git config user.email \"$GIT_USER_EMAIL\""
+        log_warning "  git config user.name \"$git_user_name\""
+        log_warning "  git config user.email \"$git_user_email\""
         log_warning "  git pull"
         log_warning "  q generate"
         log_warning "  Copy .claude/settings.local.json"
@@ -209,9 +208,9 @@ setup_worktree() {
     cd "$worktree_path"
 
     # 设置 git 用户信息
-    git config user.name "$GIT_USER_NAME"
-    git config user.email "$GIT_USER_EMAIL"
-    log_success "Set git user: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+    git config user.name "$git_user_name"
+    git config user.email "$git_user_email"
+    log_success "Set git user: $git_user_name <$git_user_email>"
 
     # 更新代码
     log_info "Updating code..."
