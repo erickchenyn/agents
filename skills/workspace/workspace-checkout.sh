@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# workspace-checkout.sh - 根据分支名或 PR ID 切换到对应的 worktree，如果不存在则创建
-# 基于 workspace-checkout skill 的脚本化实现
+# workspace-checkout.sh - Checkout or create workspace for branch/PR based on branch name or GitHub PR ID
+# Script implementation of workspace-checkout skill
 
-set -e  # 遇到错误立即退出
+set -e  # Exit on error
 
-# 导入公共函数
+# Import common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/workspace-util.sh"
 
-# 配置部分
+# Configuration
 DRY_RUN=false
 
-# 显示帮助信息
+# Show help information
 show_help() {
     cat << EOF
 workspace-checkout.sh - Checkout or create workspace for branch/PR
@@ -42,7 +42,7 @@ Note:
 EOF
 }
 
-# 解析命令行参数
+# Parse command line arguments
 parse_args() {
     BRANCH_OR_PR=""
 
@@ -80,36 +80,36 @@ parse_args() {
     fi
 }
 
-# 检查环境
+# Check environment
 check_environment() {
-    # 使用公共环境检查函数
+    # Use common environment check function
     check_workspace_environment "workspace-checkout"
 
-    # 检查必要的命令 - GitHub CLI 是必需的
+    # Check necessary commands - GitHub CLI is required
     if ! command -v gh >/dev/null 2>&1; then
         log_error "GitHub CLI (gh) is required but not installed"
         exit 1
     fi
 }
 
-# 解析输入获取有效分支名
+# Parse input to get valid branch name
 resolve_branch_name() {
     local input="$1"
     local branch_name=""
 
     log_info "Resolving branch name for: $input"
 
-    # 检查是否为数字（PR ID）
+    # Check if input is numeric (PR ID)
     if [[ "$input" =~ ^[0-9]+$ ]]; then
         log_info "Input appears to be a PR ID: $input"
-        # 获取 PR 对应的分支名
+        # Get branch name corresponding to PR
         if ! branch_name=$(gh pr view "$input" --json headRefName -q '.headRefName' 2>/dev/null); then
             log_error "Failed to get branch name for PR #$input"
             exit 1
         fi
         log_info "PR #$input corresponds to branch: $branch_name"
     else
-        # 假设为分支名，检查是否存在
+        # Assume it's a branch name, check if it exists
         branch_name="$input"
         if ! git ls-remote --heads origin "$branch_name" | grep -q "$branch_name"; then
             log_error "Branch '$branch_name' does not exist on remote"
@@ -121,14 +121,14 @@ resolve_branch_name() {
     echo "$branch_name"
 }
 
-# 查找现有 worktree
+# Find existing worktree
 find_existing_worktree() {
     local branch_name="$1"
     local worktree_path=""
 
     log_info "Looking for existing worktree for branch: $branch_name"
 
-    # 查找现有的 worktree
+    # Look for existing worktree
     while IFS= read -r line; do
         if [[ "$line" =~ ^worktree ]]; then
             worktree_path=$(echo "$line" | cut -d' ' -f2-)
@@ -144,19 +144,19 @@ find_existing_worktree() {
     return 1
 }
 
-# 创建新的 worktree
+# Create new worktree
 create_worktree() {
     local branch_name="$1"
 
     log_info "Creating new worktree for branch: $branch_name"
 
-    # 获取项目信息
+    # Get project information
     local origin_url=$(git remote get-url origin)
     local project_name=$(basename "$origin_url" .git)
     local project_dir=$(pwd)
     local root_dir=$(dirname "$project_dir")
 
-    # 创建安全的目录名（替换 / 为 -）
+    # Create safe directory name (replace / with -)
     local safe_branch_name=$(echo "$branch_name" | sed 's/\//-/g')
     local worktree_name="${project_name}-${safe_branch_name}"
     local worktree_path="${root_dir}/${worktree_name}"
@@ -172,7 +172,7 @@ create_worktree() {
         return 0
     fi
 
-    # 创建 worktree
+    # Create worktree
     if ! git worktree add "$worktree_path" "origin/$branch_name"; then
         log_error "Failed to create worktree"
         exit 1
@@ -182,14 +182,14 @@ create_worktree() {
     echo "$worktree_path"
 }
 
-# 设置工作区
+# Setup worktree
 setup_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
 
     log_info "Setting up worktree: $worktree_path"
 
-    # 获取 git 用户信息（优先本地配置，再全局配置）
+    # Get git user information (local config first, then global)
     local git_user_name=$(git config user.name)
     local git_user_email=$(git config user.email)
 
@@ -204,19 +204,19 @@ setup_worktree() {
         return 0
     fi
 
-    # 切换到新工作区
+    # Switch to new worktree
     cd "$worktree_path"
 
-    # 设置 git 用户信息
+    # Set git user information
     git config user.name "$git_user_name"
     git config user.email "$git_user_email"
     log_success "Set git user: $git_user_name <$git_user_email>"
 
-    # 更新代码
+    # Update code
     log_info "Updating code..."
     git pull
 
-    # 执行代码生成
+    # Execute code generation
     if command -v q >/dev/null 2>&1; then
         log_info "Running q generate..."
         q generate --cache=false || log_warning "q generate failed, but continuing..."
@@ -224,7 +224,7 @@ setup_worktree() {
         log_warning "Command 'q' not found, skipping code generation"
     fi
 
-    # 拷贝 Claude 设置
+    # Copy Claude settings
     local main_settings="../$(basename "$(dirname "$worktree_path")")/.claude/settings.local.json"
     if [[ -f "$main_settings" ]]; then
         mkdir -p ".claude"
@@ -235,7 +235,7 @@ setup_worktree() {
     fi
 }
 
-# 主执行函数
+# Main execution function
 main() {
     parse_args "$@"
 
@@ -245,11 +245,11 @@ main() {
 
     check_environment
 
-    # 解析分支名
+    # Parse branch name
     local branch_name
     branch_name=$(resolve_branch_name "$BRANCH_OR_PR")
 
-    # 查找现有 worktree
+    # Look for existing worktree
     local existing_worktree
     if existing_worktree=$(find_existing_worktree "$branch_name"); then
         log_success "Found existing worktree: $existing_worktree"
@@ -268,7 +268,7 @@ main() {
     fi
 }
 
-# 错误处理
+# Error handling
 cleanup_on_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
@@ -279,5 +279,5 @@ cleanup_on_error() {
 
 trap cleanup_on_error ERR
 
-# 执行主函数
+# Execute main function
 main "$@"
