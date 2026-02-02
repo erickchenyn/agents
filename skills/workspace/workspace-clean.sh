@@ -111,7 +111,7 @@ check_worktree_safety() {
 
     # 检查远程分支
     if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null; then
-        safety_report+="ℹ️  Remote branch still exists\n"
+        safety_report+="ℹ️ Remote branch still exists\n"
     else
         safety_report+="✅ Remote branch has been deleted\n"
     fi

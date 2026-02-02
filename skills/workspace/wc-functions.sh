@@ -15,12 +15,12 @@ fi
 wcreate() {
     # Check if this is a help request
     if [[ "$*" == *"--help"* ]] || [[ "$*" == *"-h"* ]]; then
-        "$WC_SCRIPT_DIR/wc" create "$@"
+        "$WC_SCRIPT_DIR/workspace-create.sh" "$@"
         return $?
     fi
 
     local switch_cmd
-    switch_cmd=$("$WC_SCRIPT_DIR/wc" create "$@")
+    switch_cmd=$("$WC_SCRIPT_DIR/workspace-create.sh" "$@")
     if [[ $? -eq 0 ]] && [[ -n "$switch_cmd" ]]; then
         # Execute the switch command
         eval "$switch_cmd"
@@ -31,12 +31,12 @@ wcreate() {
 wcheckout() {
     # Check if this is a help request
     if [[ "$*" == *"--help"* ]] || [[ "$*" == *"-h"* ]]; then
-        "$WC_SCRIPT_DIR/wc" checkout "$@"
+        "$WC_SCRIPT_DIR/workspace-checkout.sh" "$@"
         return $?
     fi
 
     local switch_cmd
-    switch_cmd=$("$WC_SCRIPT_DIR/wc" checkout "$@")
+    switch_cmd=$("$WC_SCRIPT_DIR/workspace-checkout.sh" "$@")
     if [[ $? -eq 0 ]] && [[ -n "$switch_cmd" ]]; then
         # Execute the switch command
         eval "$switch_cmd"
@@ -45,7 +45,7 @@ wcheckout() {
 
 # Workspace clean (no auto-switch needed)
 wclean() {
-    "$WC_SCRIPT_DIR/wc" clean "$@"
+    "$WC_SCRIPT_DIR/workspace-clean.sh" "$@"
 }
 
 # Show usage information
@@ -60,12 +60,14 @@ whelp() {
     echo "and execute 'cc' command after successful operations."
     echo ""
     echo "Examples:"
-    echo "  wcreate -b feature-auth       # Creates and switches to new workspace"
+    echo "  wcreate                       # Creates and switches to new workspace"
     echo "  wcheckout 123                 # Checkout PR #123 and switch to it"
     echo "  wclean                        # Clean safe worktrees"
     echo ""
     echo "For detailed options, run:"
-    echo "  $WC_SCRIPT_DIR/wc --help"
+    echo "  $WC_SCRIPT_DIR/workspace-create.sh --help"
+    echo "  $WC_SCRIPT_DIR/workspace-checkout.sh --help"
+    echo "  $WC_SCRIPT_DIR/workspace-clean.sh --help"
 }
 
 echo "Workspace functions loaded: wcreate, wcheckout, wclean, whelp"
