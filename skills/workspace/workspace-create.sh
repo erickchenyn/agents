@@ -23,14 +23,12 @@ show_help() {
 选项:
     -h, --help              显示帮助信息
     -d, --dry-run           只显示将要执行的操作，不实际执行
-    -b, --branch <name>     自定义分支名（默认使用时间戳）
     -u, --user <name>       设置 git 用户名（默认: $GIT_USER_NAME）
     -e, --email <email>     设置 git 邮箱（默认: $GIT_USER_EMAIL）
 
 示例:
     $0                      # 使用默认设置创建工作区
     $0 -d                   # 预览模式，不实际执行
-    $0 -b feature-auth      # 创建自定义分支名的工作区
 EOF
 }
 
@@ -45,10 +43,6 @@ parse_args() {
             -d|--dry-run)
                 DRY_RUN=true
                 shift
-                ;;
-            -b|--branch)
-                CUSTOM_BRANCH="$2"
-                shift 2
                 ;;
             -u|--user)
                 GIT_USER_NAME="$2"
@@ -114,15 +108,8 @@ get_project_info() {
     TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
 
     # 构建名称
-    if [[ -n "$CUSTOM_BRANCH" ]]; then
-        BRANCH_NAME="$CUSTOM_BRANCH"
-        # 创建安全的目录名（替换 / 为 -）
-        local safe_branch_name=$(echo "$CUSTOM_BRANCH" | sed 's/\//-/g')
-        WORKTREE_NAME="${PROJECT_NAME}-${safe_branch_name}"
-    else
-        BRANCH_NAME="${BRANCH_PREFIX}/${TIMESTAMP}"
-        WORKTREE_NAME="${PROJECT_NAME}-${TIMESTAMP}"
-    fi
+    BRANCH_NAME="${BRANCH_PREFIX}/${TIMESTAMP}"
+    WORKTREE_NAME="${PROJECT_NAME}-${TIMESTAMP}"
     WORKTREE_PATH="${ROOT_DIR}/${WORKTREE_NAME}"
 
     log_success "项目信息获取完成"
