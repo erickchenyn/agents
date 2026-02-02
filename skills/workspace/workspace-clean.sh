@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# workspace-clean.sh - 清理指定的 git worktree，并将其 Claude 配置合并回主工作区
-# 基于 workspace-clean skill 的脚本化实现
+# workspace-clean.sh - Clean specified git worktree and merge its Claude configuration back to main workspace
+# Script implementation of workspace-clean skill
 
-set -e  # 遇到错误立即退出
+set -e  # Exit on error
 
-# 导入公共函数
+# Import common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/workspace-util.sh"
 
-# 配置部分
+# Configuration
 DRY_RUN=false
 
-# 显示帮助信息
+# Show help information
 show_help() {
     cat << EOF
 workspace-clean.sh - Clean git worktree and merge Claude settings
@@ -30,7 +30,7 @@ Examples:
 EOF
 }
 
-# 解析命令行参数
+# Parse command line arguments
 parse_args() {
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -57,17 +57,17 @@ parse_args() {
     done
 }
 
-# 检查环境
+# Check environment
 check_environment() {
-    # 使用公共环境检查函数
+    # Use common environment check function
     check_workspace_environment "workspace-clean"
 
-    # 检查 GitHub CLI 可用性
+    # Check GitHub CLI availability
     check_gh_available
 }
 
 
-# 检查工作区状态
+# Check worktree status
 check_worktree_safety() {
     local worktree_path="$1"
     local branch_name="$2"
@@ -76,7 +76,7 @@ check_worktree_safety() {
 
     log_info "Checking safety for: $worktree_path ($branch_name)"
 
-    # 检查工作区是否存在
+    # Check if worktree exists
     if [[ ! -d "$worktree_path" ]]; then
         safety_report+="⚠️  Worktree directory not found\n"
         is_safe=false
@@ -84,19 +84,19 @@ check_worktree_safety() {
         return
     fi
 
-    # 检查工作区状态
+    # Check worktree status
     if ! (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet); then
         safety_report+="⚠️  Uncommitted changes detected\n"
         is_safe=false
     fi
 
-    # 检查未推送的提交
+    # Check unpushed commits
     if (cd "$worktree_path" && [[ $(git rev-list --count "@{u}"..) -gt 0 ]] 2>/dev/null); then
         safety_report+="⚠️  Unpushed commits detected\n"
         is_safe=false
     fi
 
-    # 检查 PR 状态（如果 GitHub CLI 可用）
+    # Check PR status (if GitHub CLI available)
     if [[ "$GH_AVAILABLE" == "true" ]]; then
         local pr_status
         if pr_status=$(gh pr list --head "$branch_name" --json number,state --jq '.[0].state' 2>/dev/null) && [[ -n "$pr_status" ]]; then
@@ -109,7 +109,7 @@ check_worktree_safety() {
         fi
     fi
 
-    # 检查远程分支
+    # Check remote branch
     if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null; then
         safety_report+="ℹ️ Remote branch still exists\n"
     else
@@ -124,7 +124,7 @@ check_worktree_safety() {
 }
 
 
-# 备份和合并 Claude 配置
+# Backup and merge Claude settings
 backup_claude_settings() {
     local worktree_path="$1"
     local worktree_settings="$worktree_path/.claude/settings.local.json"
@@ -155,7 +155,7 @@ backup_claude_settings() {
     fi
 }
 
-# 移除工作区
+# Remove worktree
 clean_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
@@ -168,10 +168,10 @@ clean_worktree() {
         return 0
     fi
 
-    # 备份 Claude 配置
+    # Backup Claude settings
     backup_claude_settings "$worktree_path"
 
-    # 移除工作区
+    # Remove worktree
     if git worktree remove "$worktree_path"; then
         log_success "Cleaned worktree: $worktree_path"
     else
@@ -180,7 +180,7 @@ clean_worktree() {
     fi
 }
 
-# 主执行函数
+# Main execution function
 main() {
     parse_args "$@"
 
@@ -280,7 +280,7 @@ main() {
     fi
 }
 
-# 错误处理
+# Error handling
 cleanup_on_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
@@ -291,5 +291,5 @@ cleanup_on_error() {
 
 trap cleanup_on_error ERR
 
-# 执行主函数
+# Execute main function
 main "$@"
