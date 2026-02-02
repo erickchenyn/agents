@@ -43,9 +43,9 @@ wcheckout() {
     fi
 }
 
-# Workspace remove (no auto-switch needed)
-wremove() {
-    "$WC_SCRIPT_DIR/wc" remove "$@"
+# Workspace clean (no auto-switch needed)
+wclean() {
+    "$WC_SCRIPT_DIR/wc" clean "$@"
 }
 
 # Show usage information
@@ -54,7 +54,7 @@ whelp() {
     echo ""
     echo "  wcreate [options]             Create new workspace and switch to it"
     echo "  wcheckout <branch|pr> [opts]  Checkout workspace and switch to it"
-    echo "  wremove [options]             Remove safe worktrees"
+    echo "  wclean [options]              Clean safe worktrees"
     echo ""
     echo "These functions automatically switch to the new workspace directory"
     echo "and execute 'cc' command after successful operations."
@@ -62,11 +62,10 @@ whelp() {
     echo "Examples:"
     echo "  wcreate -b feature-auth       # Creates and switches to new workspace"
     echo "  wcheckout 123                 # Checkout PR #123 and switch to it"
-    echo "  wremove                       # Remove safe worktrees"
+    echo "  wclean                        # Clean safe worktrees"
     echo ""
     echo "For detailed options, run:"
     echo "  $WC_SCRIPT_DIR/wc --help"
 }
 
-echo "Workspace functions loaded: wcreate, wcheckout, wremove, whelp"
-echo "Try: wcreate -b my-feature"
+echo "Workspace functions loaded: wcreate, wcheckout, wclean, whelp"

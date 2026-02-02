@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# workspace-remove.sh - 移除指定的 git worktree，并将其 Claude 配置合并回主工作区
-# 基于 workspace-remove skill 的脚本化实现
+# workspace-clean.sh - 清理指定的 git worktree，并将其 Claude 配置合并回主工作区
+# 基于 workspace-clean skill 的脚本化实现
 
 set -e  # 遇到错误立即退出
 
@@ -15,7 +15,7 @@ DRY_RUN=false
 # 显示帮助信息
 show_help() {
     cat << EOF
-workspace-remove.sh - Remove git worktree and merge Claude settings
+workspace-clean.sh - Clean git worktree and merge Claude settings
 
 Usage: $0 [OPTIONS]
 
@@ -24,8 +24,8 @@ Options:
     -d, --dry-run       Preview mode, don't actually execute operations
 
 Examples:
-    $0                  # Remove all safe worktrees, skip unsafe ones
-    $0 -d               # Preview removal of all worktrees
+    $0                  # Clean all safe worktrees, skip unsafe ones
+    $0 -d               # Preview cleaning of all worktrees
 
 EOF
 }
@@ -60,7 +60,7 @@ parse_args() {
 # 检查环境
 check_environment() {
     # 使用公共环境检查函数
-    check_workspace_environment "workspace-remove"
+    check_workspace_environment "workspace-clean"
 
     # 检查 GitHub CLI 可用性
     check_gh_available
@@ -117,7 +117,7 @@ check_worktree_safety() {
     fi
 
     if [[ "$is_safe" == "true" ]]; then
-        safety_report="✅ Safe to remove\n$safety_report"
+        safety_report="✅ Safe to clean\n$safety_report"
     fi
 
     echo -e "$is_safe|$safety_report"
@@ -156,14 +156,14 @@ backup_claude_settings() {
 }
 
 # 移除工作区
-remove_worktree() {
+clean_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
 
-    print_info "Removing worktree: $worktree_path ($branch_name)"
+    print_info "Cleaning worktree: $worktree_path ($branch_name)"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "[DRY RUN] Would remove worktree:"
+        print_warning "[DRY RUN] Would clean worktree:"
         print_warning "  git worktree remove \"$worktree_path\""
         return 0
     fi
@@ -173,9 +173,9 @@ remove_worktree() {
 
     # 移除工作区
     if git worktree remove "$worktree_path"; then
-        print_success "Removed worktree: $worktree_path"
+        print_success "Cleaned worktree: $worktree_path"
     else
-        print_error "Failed to remove worktree: $worktree_path"
+        print_error "Failed to clean worktree: $worktree_path"
         return 1
     fi
 }
@@ -190,21 +190,21 @@ main() {
 
     check_environment
 
-    local worktrees_to_remove=()
+    local worktrees_to_clean=()
 
     # Process all non-main worktrees
-    mapfile -t worktrees_to_remove < <(get_worktrees)
+    mapfile -t worktrees_to_clean < <(get_worktrees)
     print_info "Processing all non-main worktrees"
 
-    if [[ ${#worktrees_to_remove[@]} -eq 0 ]]; then
-        print_warning "No worktrees selected for removal"
+    if [[ ${#worktrees_to_clean[@]} -eq 0 ]]; then
+        print_warning "No worktrees selected for cleaning"
         exit 0
     fi
 
     # Safety checks - show status but continue with automatic filtering
     print_info "Performing safety checks..."
 
-    for worktree in "${worktrees_to_remove[@]}"; do
+    for worktree in "${worktrees_to_clean[@]}"; do
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
@@ -218,15 +218,15 @@ main() {
         echo ""
     done
 
-    # Execute removal - only for safe worktrees
+    # Execute cleaning - only for safe worktrees
     local success_count=0
     local skipped_count=0
-    local total_count=${#worktrees_to_remove[@]}
+    local total_count=${#worktrees_to_clean[@]}
     local safe_worktrees=()
     local unsafe_worktrees=()
 
     # Separate safe and unsafe worktrees
-    for worktree in "${worktrees_to_remove[@]}"; do
+    for worktree in "${worktrees_to_clean[@]}"; do
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
@@ -242,12 +242,12 @@ main() {
         fi
     done
 
-    # Remove safe worktrees
+    # Clean safe worktrees
     for worktree in "${safe_worktrees[@]}"; do
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
-        if remove_worktree "$path" "$branch"; then
+        if clean_worktree "$path" "$branch"; then
             success_count=$((success_count + 1))
         fi
     done
@@ -265,10 +265,10 @@ main() {
     done
 
     # Report final results
-    print_success "Removal completed: $success_count removed, $skipped_count skipped (unsafe)"
+    print_success "Cleaning completed: $success_count cleaned, $skipped_count skipped (unsafe)"
 
     if [[ "$skipped_count" -gt 0 ]]; then
-        print_info "To remove unsafe worktrees, resolve the safety issues first:"
+        print_info "To clean unsafe worktrees, resolve the safety issues first:"
         print_info "- Commit or stash uncommitted changes"
         print_info "- Push unpushed commits to remote"
         print_info "- Close or merge open PRs"

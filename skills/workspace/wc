@@ -31,13 +31,13 @@ wc - Workspace Management Tool
 Usage:
     wc create [OPTIONS]                 Create new workspace
     wc checkout [OPTIONS] <branch|pr>   Checkout/create workspace for branch or PR
-    wc remove [OPTIONS]                 Remove worktrees and merge Claude settings
+    wc clean [OPTIONS]                  Clean worktrees and merge Claude settings
     wc -h, --help                       Show this help
 
 Subcommands:
     create      Create a new git worktree and branch for parallel development
     checkout    Switch to existing worktree or create new one for given branch/PR
-    remove      Remove all safe worktrees with settings backup (unsafe ones skipped)
+    clean       Clean all safe worktrees with settings backup (unsafe ones skipped)
 
 Create Options:
     -h, --help              Show help message
@@ -52,7 +52,7 @@ Checkout Options:
     -u, --user <name>       Set git user name (default: erick.chen)
     -e, --email <email>     Set git user email (default: erick.chen@paraflow.com)
 
-Remove Options:
+Clean Options:
     -h, --help              Show help message
     -d, --dry-run           Preview mode, don't actually execute operations
 
@@ -69,9 +69,9 @@ Examples:
     wc checkout -d fix-bug-issue        # Preview checkout operation
     wc checkout -u john 456             # Checkout PR #456 with custom user
 
-    # Remove operations
-    wc remove                           # Remove all safe worktrees, skip unsafe ones
-    wc remove -d                        # Preview removal of all worktrees
+    # Clean operations
+    wc clean                            # Clean all safe worktrees, skip unsafe ones
+    wc clean -d                         # Preview cleaning of all worktrees
 
 Environment Variables:
     GIT_USER_NAME           Default git user name
@@ -100,9 +100,9 @@ main() {
             # 调用 workspace-checkout.sh
             exec "$SCRIPT_DIR/workspace-checkout.sh" "$@"
             ;;
-        remove)
-            # 调用 workspace-remove.sh
-            exec "$SCRIPT_DIR/workspace-remove.sh" "$@"
+        clean)
+            # 调用 workspace-clean.sh
+            exec "$SCRIPT_DIR/workspace-clean.sh" "$@"
             ;;
         -h|--help)
             show_help
@@ -110,7 +110,7 @@ main() {
             ;;
         *)
             print_error "Unknown subcommand: $subcommand"
-            print_info "Available subcommands: create, checkout, remove"
+            print_info "Available subcommands: create, checkout, clean"
             show_help
             exit 1
             ;;
