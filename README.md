@@ -9,9 +9,9 @@ This repository contains Claude Code global prompts for personal use.
 | [moxt-daily-todo](skills/moxt-daily-todo/SKILL.md) | 查询每日待办事项，包括 Jira 任务、GitHub Issues 和 GitHub PRs，统一展示所有需要关注的工作 |
 | [moxt-project-repo-debug](skills/moxt-project-repo-debug/SKILL.md) | clone paraflow 项目的 git 仓库并进行分析 |
 | [workspace-checkout](skills/workspace-checkout/SKILL.md) | 根据提供的分支名或 GitHub PR ID，查找本地对应的 worktree。如果不存在则创建新的 worktree，如果存在则直接切换 |
+| [workspace-clean](skills/workspace-clean/SKILL.md) | 清理安全的 git worktree，并将其 Claude 配置合并回主工作区以保持记忆延续 |
 | [workspace-create](skills/workspace-create/SKILL.md) | 基于当前项目的 origin/main 创建一个新的 git worktree 和分支，用于并行开发 |
-| [workspace-remove](skills/workspace-remove/SKILL.md) | 移除指定的 git worktree，并将其 Claude 配置合并回主工作区以保持记忆延续 |
 
 ---
 
-*This document was automatically generated based on commit [`2f3f3fd503ffd0aacd93b653ce029233c90b0d07`](https://github.com/erickchenyn/claude/commit/2f3f3fd503ffd0aacd93b653ce029233c90b0d07).*
+*This document was automatically generated based on commit [`03581ce654522eb526de7586a8c9a18e5a33aaa0`](https://github.com/erickchenyn/claude/commit/03581ce654522eb526de7586a8c9a18e5a33aaa0).*
