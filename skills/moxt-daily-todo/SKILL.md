@@ -1,9 +1,6 @@
 ---
 name: moxt-daily-todo
 description: 查询每日待办事项，包括 Jira 任务、GitHub Issues 和 GitHub PRs，统一展示所有需要关注的工作
-allowed_tools:
-  - "mcp__plugin_atlassian_atlassian__atlassianUserInfo"
-  - "mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql"
 ---
 
 综合查询和展示每日待办事项，整合来自 Jira 和 GitHub 的所有任务。
@@ -24,13 +21,8 @@ allowed_tools:
 
 - 获取当前 GitHub 用户名
 - 分别查询以下类型的 Issue 和 PR：
-  - Issues assigned to me
-  - PRs assigned to me
-  - Issues mentioning me
-  - PRs mentioning me
-  - PRs requesting my review
-  - Issues involving me (broader search)
-  - PRs involving me (broader search)
+  - Issues (opened, assigned to / created by / mentioning me)
+  - PRs (opened, assigned to / created by / mentioning me & requesting my review)
 - 去重并按类型分组
 
 ### 3. 统一展示格式
