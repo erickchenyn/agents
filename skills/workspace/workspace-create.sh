@@ -64,7 +64,7 @@ parse_args() {
 # 检查工作区环境
 check_environment() {
     # 使用公共环境检查函数
-    check_workspace_environment_zh "workspace-create"
+    check_workspace_environment "workspace-create"
 
     # 检查是否有未提交的更改
     if ! git diff --quiet || ! git diff --staged --quiet; then

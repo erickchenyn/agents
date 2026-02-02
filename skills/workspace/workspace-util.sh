@@ -11,23 +11,6 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # 打印函数
-print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
-
-# 中文版打印函数（兼容 workspace-create）
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -46,33 +29,6 @@ log_error() {
 
 # 检查基础环境
 check_workspace_environment() {
-    local script_name="${1:-workspace script}"
-
-    print_info "Checking environment..."
-
-    # 检查是否在 git 仓库中
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        print_error "Not inside a git repository"
-        exit 1
-    fi
-
-    # 检查是否在主工作区
-    local main_worktree=$(git worktree list --porcelain | grep -A1 "^worktree" | head -1 | cut -d' ' -f2-)
-    local current_dir=$(pwd)
-
-    if [[ "$current_dir" != "$main_worktree" ]]; then
-        print_error "Not in main worktree. Please switch to main worktree first:"
-        print_error "  Main worktree: $main_worktree"
-        print_error "  Current dir:   $current_dir"
-        print_info "Run: cd \"$main_worktree\""
-        exit 1
-    fi
-
-    print_success "Environment check passed"
-}
-
-# 中文版环境检查（兼容 workspace-create）
-check_workspace_environment_zh() {
     local script_name="${1:-workspace script}"
 
     log_info "检查工作区环境..."
@@ -102,7 +58,7 @@ check_workspace_environment_zh() {
 get_project_info() {
     # 获取远程仓库 URL
     if ! ORIGIN_URL=$(git remote get-url origin 2>/dev/null); then
-        print_error "Cannot get origin remote URL"
+        log_error "无法获取 origin 远程仓库 URL"
         exit 1
     fi
 
@@ -110,7 +66,7 @@ get_project_info() {
     if [[ "$ORIGIN_URL" =~ github\.com[:/]([^/]+)/([^/]+)(\.git)?$ ]]; then
         PROJECT_NAME="${BASH_REMATCH[2]%.git}"
     else
-        print_error "Cannot parse project name from origin URL: $ORIGIN_URL"
+        log_error "无法从 origin URL 解析项目名: $ORIGIN_URL"
         exit 1
     fi
 
@@ -118,9 +74,9 @@ get_project_info() {
     PROJECT_DIR=$(pwd)
     ROOT_DIR=$(dirname "$PROJECT_DIR")
 
-    print_info "Project: $PROJECT_NAME"
-    print_info "Project dir: $PROJECT_DIR"
-    print_info "Root dir: $ROOT_DIR"
+    log_info "项目名: $PROJECT_NAME"
+    log_info "项目目录: $PROJECT_DIR"
+    log_info "根目录: $ROOT_DIR"
 }
 
 # 获取所有非主工作区
@@ -154,10 +110,10 @@ get_worktrees() {
 check_gh_available() {
     if command -v gh >/dev/null 2>&1; then
         export GH_AVAILABLE=true
-        print_info "GitHub CLI available"
+        log_info "GitHub CLI 可用"
     else
         export GH_AVAILABLE=false
-        print_warning "GitHub CLI not available, some features will be limited"
+        log_warning "GitHub CLI 不可用，部分功能将受限"
     fi
 }
 
