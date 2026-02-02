@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# workspace-common.sh - 通用的 workspace 环境检查和工具函数
-# 供所有 workspace 脚本共同使用
+# workspace-util.sh - Common workspace environment checks and utility functions
+# Shared by all workspace scripts
 
-# 颜色输出
+# Color output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# 打印函数
+# Print functions
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -27,21 +27,21 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 检查 git 用户配置
+# Check git user configuration
 check_git_config() {
-    log_info "检查 git 用户配置..."
+    log_info "Checking git user configuration..."
 
-    # 分别检查本地和全局配置
+    # Check local and global configurations separately
     local git_user_name_local=$(git config --local user.name 2>/dev/null || echo "")
     local git_user_email_local=$(git config --local user.email 2>/dev/null || echo "")
     local git_user_name_global=$(git config --global user.name 2>/dev/null || echo "")
     local git_user_email_global=$(git config --global user.email 2>/dev/null || echo "")
 
-    # 确定最终使用的配置（本地优先，git config 命令的默认行为）
+    # Determine final configuration to use (local takes precedence, git config default behavior)
     local git_user_name=$(git config user.name 2>/dev/null || echo "")
     local git_user_email=$(git config user.email 2>/dev/null || echo "")
 
-    # 确定配置来源
+    # Determine configuration source
     local config_source="unknown"
     local name_is_local=false
     local email_is_local=false
@@ -63,80 +63,80 @@ check_git_config() {
     fi
 
     if [[ -z "$git_user_name" ]]; then
-        log_error "Git user.name 未设置"
-        log_error "请使用以下命令之一设置:"
-        log_error "  本地设置: git config user.name \"Your Name\""
-        log_error "  全局设置: git config --global user.name \"Your Name\""
+        log_error "Git user.name is not set"
+        log_error "Please set it using one of these commands:"
+        log_error "  Local setting: git config user.name \"Your Name\""
+        log_error "  Global setting: git config --global user.name \"Your Name\""
         exit 1
     fi
 
     if [[ -z "$git_user_email" ]]; then
-        log_error "Git user.email 未设置"
-        log_error "请使用以下命令之一设置:"
-        log_error "  本地设置: git config user.email \"your.email@example.com\""
-        log_error "  全局设置: git config --global user.email \"your.email@example.com\""
+        log_error "Git user.email is not set"
+        log_error "Please set it using one of these commands:"
+        log_error "  Local setting: git config user.email \"your.email@example.com\""
+        log_error "  Global setting: git config --global user.email \"your.email@example.com\""
         exit 1
     fi
 
-    log_success "Git 用户配置检查通过 ($config_source): $git_user_name <$git_user_email>"
+    log_success "Git user configuration check passed ($config_source): $git_user_name <$git_user_email>"
 }
 
-# 检查基础环境
+# Check basic environment
 check_workspace_environment() {
     local script_name="${1:-workspace script}"
 
-    log_info "检查工作区环境..."
+    log_info "Checking workspace environment..."
 
-    # 检查是否在 git 仓库中
+    # Check if in git repository
     if ! git rev-parse --git-dir > /dev/null 2>&1; then
-        log_error "当前目录不是 git 仓库"
+        log_error "Current directory is not a git repository"
         exit 1
     fi
 
-    # 检查是否在主工作区
+    # Check if in main worktree
     local current_dir=$(pwd)
     local main_worktree=$(git worktree list --porcelain | grep "^worktree " | head -1 | cut -d' ' -f2-)
 
     if [[ "$current_dir" != "$main_worktree" ]]; then
-        log_error "当前不在主工作区中"
-        log_error "主工作区: $main_worktree"
-        log_error "当前目录: $current_dir"
-        log_error "请切换到主工作区后重新运行"
+        log_error "Not currently in main worktree"
+        log_error "Main worktree: $main_worktree"
+        log_error "Current directory: $current_dir"
+        log_error "Please switch to main worktree and run again"
         exit 1
     fi
 
-    # 检查 git 用户配置
+    # Check git user configuration
     check_git_config
 
-    log_success "环境检查通过"
+    log_success "Environment check passed"
 }
 
-# 获取项目信息
+# Get project information
 get_project_info() {
-    # 获取远程仓库 URL
+    # Get remote repository URL
     if ! ORIGIN_URL=$(git remote get-url origin 2>/dev/null); then
-        log_error "无法获取 origin 远程仓库 URL"
+        log_error "Cannot get origin remote repository URL"
         exit 1
     fi
 
-    # 从 URL 提取项目名
+    # Extract project name from URL
     if [[ "$ORIGIN_URL" =~ github\.com[:/]([^/]+)/([^/]+)(\.git)?$ ]]; then
         PROJECT_NAME="${BASH_REMATCH[2]%.git}"
     else
-        log_error "无法从 origin URL 解析项目名: $ORIGIN_URL"
+        log_error "Cannot parse project name from origin URL: $ORIGIN_URL"
         exit 1
     fi
 
-    # 获取项目根目录
+    # Get project root directory
     PROJECT_DIR=$(pwd)
     ROOT_DIR=$(dirname "$PROJECT_DIR")
 
-    log_info "项目名: $PROJECT_NAME"
-    log_info "项目目录: $PROJECT_DIR"
-    log_info "根目录: $ROOT_DIR"
+    log_info "Project name: $PROJECT_NAME"
+    log_info "Project directory: $PROJECT_DIR"
+    log_info "Root directory: $ROOT_DIR"
 }
 
-# 获取所有非主工作区
+# Get all non-main worktrees
 get_worktrees() {
     local worktrees=()
     local current_worktree=""
@@ -163,24 +163,24 @@ get_worktrees() {
     printf '%s\n' "${worktrees[@]}"
 }
 
-# 检查必要命令是否可用
+# Check if necessary commands are available
 check_gh_available() {
     if command -v gh >/dev/null 2>&1; then
         export GH_AVAILABLE=true
-        log_info "GitHub CLI 可用"
+        log_info "GitHub CLI is available"
     else
         export GH_AVAILABLE=false
-        log_warning "GitHub CLI 不可用，部分功能将受限"
+        log_warning "GitHub CLI is not available, some features will be limited"
     fi
 }
 
-# 安全的分支名转换（/ 替换为 -）
+# Safe branch name conversion (replace / with -)
 safe_branch_name() {
     local branch_name="$1"
     echo "$branch_name" | sed 's/\//-/g'
 }
 
-# 检查工作区是否干净
+# Check if worktree is clean
 is_worktree_clean() {
     local worktree_path="$1"
 
@@ -188,11 +188,11 @@ is_worktree_clean() {
         return 1
     fi
 
-    # 切换到工作区并检查状态
+    # Switch to worktree and check status
     (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet)
 }
 
-# 检查是否有未推送的提交
+# Check if there are unpushed commits
 has_unpushed_commits() {
     local worktree_path="$1"
 
@@ -200,16 +200,16 @@ has_unpushed_commits() {
         return 1
     fi
 
-    # 切换到工作区并检查未推送提交
+    # Switch to worktree and check unpushed commits
     local unpushed_count
     unpushed_count=$(cd "$worktree_path" && git rev-list --count "@{u}".. 2>/dev/null || echo "0")
     [[ "$unpushed_count" -gt 0 ]]
 }
 
-# 输出工作区切换命令
+# Output worktree switch command
 show_worktree_switch_info() {
     local worktree_path="$1"
 
-    # 直接输出切换命令，用户可以用 eval $(wc ...) 方式调用
+    # Output switch command directly, users can call with eval $(wc ...) style
     echo "cd \"$worktree_path\" && cc"
 }
