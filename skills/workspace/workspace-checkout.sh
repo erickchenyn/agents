@@ -62,7 +62,7 @@ parse_args() {
                 shift 2
                 ;;
             -*)
-                print_error "Unknown option: $1"
+                log_error "Unknown option: $1"
                 show_help
                 exit 1
                 ;;
@@ -70,7 +70,7 @@ parse_args() {
                 if [[ -z "$BRANCH_OR_PR" ]]; then
                     BRANCH_OR_PR="$1"
                 else
-                    print_error "Too many arguments. Expected one branch name or PR ID."
+                    log_error "Too many arguments. Expected one branch name or PR ID."
                     exit 1
                 fi
                 shift
@@ -79,7 +79,7 @@ parse_args() {
     done
 
     if [[ -z "$BRANCH_OR_PR" ]]; then
-        print_error "Branch name or PR ID is required"
+        log_error "Branch name or PR ID is required"
         show_help
         exit 1
     fi
@@ -92,7 +92,7 @@ check_environment() {
 
     # 检查必要的命令 - GitHub CLI 是必需的
     if ! command -v gh >/dev/null 2>&1; then
-        print_error "GitHub CLI (gh) is required but not installed"
+        log_error "GitHub CLI (gh) is required but not installed"
         exit 1
     fi
 }
@@ -102,25 +102,25 @@ resolve_branch_name() {
     local input="$1"
     local branch_name=""
 
-    print_info "Resolving branch name for: $input"
+    log_info "Resolving branch name for: $input"
 
     # 检查是否为数字（PR ID）
     if [[ "$input" =~ ^[0-9]+$ ]]; then
-        print_info "Input appears to be a PR ID: $input"
+        log_info "Input appears to be a PR ID: $input"
         # 获取 PR 对应的分支名
         if ! branch_name=$(gh pr view "$input" --json headRefName -q '.headRefName' 2>/dev/null); then
-            print_error "Failed to get branch name for PR #$input"
+            log_error "Failed to get branch name for PR #$input"
             exit 1
         fi
-        print_info "PR #$input corresponds to branch: $branch_name"
+        log_info "PR #$input corresponds to branch: $branch_name"
     else
         # 假设为分支名，检查是否存在
         branch_name="$input"
         if ! git ls-remote --heads origin "$branch_name" | grep -q "$branch_name"; then
-            print_error "Branch '$branch_name' does not exist on remote"
+            log_error "Branch '$branch_name' does not exist on remote"
             exit 1
         fi
-        print_info "Branch '$branch_name' exists on remote"
+        log_info "Branch '$branch_name' exists on remote"
     fi
 
     echo "$branch_name"
@@ -131,7 +131,7 @@ find_existing_worktree() {
     local branch_name="$1"
     local worktree_path=""
 
-    print_info "Looking for existing worktree for branch: $branch_name"
+    log_info "Looking for existing worktree for branch: $branch_name"
 
     # 查找现有的 worktree
     while IFS= read -r line; do
@@ -153,7 +153,7 @@ find_existing_worktree() {
 create_worktree() {
     local branch_name="$1"
 
-    print_info "Creating new worktree for branch: $branch_name"
+    log_info "Creating new worktree for branch: $branch_name"
 
     # 获取项目信息
     local origin_url=$(git remote get-url origin)
@@ -166,24 +166,24 @@ create_worktree() {
     local worktree_name="${project_name}-${safe_branch_name}"
     local worktree_path="${root_dir}/${worktree_name}"
 
-    print_info "Project: $project_name"
-    print_info "Root directory: $root_dir"
-    print_info "Worktree path: $worktree_path"
+    log_info "Project: $project_name"
+    log_info "Root directory: $root_dir"
+    log_info "Worktree path: $worktree_path"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "[DRY RUN] Would create worktree:"
-        print_warning "  git worktree add \"$worktree_path\" \"origin/$branch_name\""
+        log_warning "[DRY RUN] Would create worktree:"
+        log_warning "  git worktree add \"$worktree_path\" \"origin/$branch_name\""
         echo "$worktree_path"
         return 0
     fi
 
     # 创建 worktree
     if ! git worktree add "$worktree_path" "origin/$branch_name"; then
-        print_error "Failed to create worktree"
+        log_error "Failed to create worktree"
         exit 1
     fi
 
-    print_success "Created worktree: $worktree_path"
+    log_success "Created worktree: $worktree_path"
     echo "$worktree_path"
 }
 
@@ -192,16 +192,16 @@ setup_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
 
-    print_info "Setting up worktree: $worktree_path"
+    log_info "Setting up worktree: $worktree_path"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "[DRY RUN] Would setup worktree:"
-        print_warning "  cd \"$worktree_path\""
-        print_warning "  git config user.name \"$GIT_USER_NAME\""
-        print_warning "  git config user.email \"$GIT_USER_EMAIL\""
-        print_warning "  git pull"
-        print_warning "  q generate"
-        print_warning "  Copy .claude/settings.local.json"
+        log_warning "[DRY RUN] Would setup worktree:"
+        log_warning "  cd \"$worktree_path\""
+        log_warning "  git config user.name \"$GIT_USER_NAME\""
+        log_warning "  git config user.email \"$GIT_USER_EMAIL\""
+        log_warning "  git pull"
+        log_warning "  q generate"
+        log_warning "  Copy .claude/settings.local.json"
         return 0
     fi
 
@@ -211,18 +211,18 @@ setup_worktree() {
     # 设置 git 用户信息
     git config user.name "$GIT_USER_NAME"
     git config user.email "$GIT_USER_EMAIL"
-    print_success "Set git user: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+    log_success "Set git user: $GIT_USER_NAME <$GIT_USER_EMAIL>"
 
     # 更新代码
-    print_info "Updating code..."
+    log_info "Updating code..."
     git pull
 
     # 执行代码生成
     if command -v q >/dev/null 2>&1; then
-        print_info "Running q generate..."
-        q generate --cache=false || print_warning "q generate failed, but continuing..."
+        log_info "Running q generate..."
+        q generate --cache=false || log_warning "q generate failed, but continuing..."
     else
-        print_warning "Command 'q' not found, skipping code generation"
+        log_warning "Command 'q' not found, skipping code generation"
     fi
 
     # 拷贝 Claude 设置
@@ -230,9 +230,9 @@ setup_worktree() {
     if [[ -f "$main_settings" ]]; then
         mkdir -p ".claude"
         cp "$main_settings" ".claude/settings.local.json"
-        print_success "Copied Claude settings"
+        log_success "Copied Claude settings"
     else
-        print_warning "Main worktree Claude settings not found: $main_settings"
+        log_warning "Main worktree Claude settings not found: $main_settings"
     fi
 }
 
@@ -241,7 +241,7 @@ main() {
     parse_args "$@"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "=== DRY RUN MODE - No actual changes will be made ==="
+        log_warning "=== DRY RUN MODE - No actual changes will be made ==="
     fi
 
     check_environment
@@ -253,17 +253,17 @@ main() {
     # 查找现有 worktree
     local existing_worktree
     if existing_worktree=$(find_existing_worktree "$branch_name"); then
-        print_success "Found existing worktree: $existing_worktree"
+        log_success "Found existing worktree: $existing_worktree"
         setup_worktree "$existing_worktree" "$branch_name"
 
         show_worktree_switch_info "$existing_worktree"
     else
-        print_info "No existing worktree found, creating new one..."
+        log_info "No existing worktree found, creating new one..."
         local new_worktree
         new_worktree=$(create_worktree "$branch_name")
         setup_worktree "$new_worktree" "$branch_name"
 
-        print_success "Created and switched to new worktree"
+        log_success "Created and switched to new worktree"
 
         show_worktree_switch_info "$new_worktree"
     fi
@@ -273,7 +273,7 @@ main() {
 cleanup_on_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        print_error "Operation failed with exit code $exit_code"
+        log_error "Operation failed with exit code $exit_code"
     fi
     exit $exit_code
 }

@@ -43,13 +43,13 @@ parse_args() {
                 shift
                 ;;
             -*)
-                print_error "Unknown option: $1"
+                log_error "Unknown option: $1"
                 show_help
                 exit 1
                 ;;
             *)
-                print_error "Unexpected argument: $1"
-                print_info "No arguments needed, script processes all worktrees automatically"
+                log_error "Unexpected argument: $1"
+                log_info "No arguments needed, script processes all worktrees automatically"
                 show_help
                 exit 1
                 ;;
@@ -74,7 +74,7 @@ check_worktree_safety() {
     local safety_report=""
     local is_safe=true
 
-    print_info "Checking safety for: $worktree_path ($branch_name)"
+    log_info "Checking safety for: $worktree_path ($branch_name)"
 
     # 检查工作区是否存在
     if [[ ! -d "$worktree_path" ]]; then
@@ -134,12 +134,12 @@ backup_claude_settings() {
         return 0
     fi
 
-    print_info "Backing up Claude settings from: $worktree_path"
+    log_info "Backing up Claude settings from: $worktree_path"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "[DRY RUN] Would merge Claude settings:"
-        print_warning "  From: $worktree_settings"
-        print_warning "  To: $main_settings"
+        log_warning "[DRY RUN] Would merge Claude settings:"
+        log_warning "  From: $worktree_settings"
+        log_warning "  To: $main_settings"
         return 0
     fi
 
@@ -147,11 +147,11 @@ backup_claude_settings() {
     if [[ ! -f "$main_settings" ]]; then
         mkdir -p "$(dirname "$main_settings")"
         cp "$worktree_settings" "$main_settings"
-        print_success "Copied Claude settings to main worktree"
+        log_success "Copied Claude settings to main worktree"
     else
-        print_warning "Main worktree already has Claude settings, manual merge may be needed"
-        print_info "Worktree settings: $worktree_settings"
-        print_info "Main settings: $main_settings"
+        log_warning "Main worktree already has Claude settings, manual merge may be needed"
+        log_info "Worktree settings: $worktree_settings"
+        log_info "Main settings: $main_settings"
     fi
 }
 
@@ -160,11 +160,11 @@ clean_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
 
-    print_info "Cleaning worktree: $worktree_path ($branch_name)"
+    log_info "Cleaning worktree: $worktree_path ($branch_name)"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "[DRY RUN] Would clean worktree:"
-        print_warning "  git worktree remove \"$worktree_path\""
+        log_warning "[DRY RUN] Would clean worktree:"
+        log_warning "  git worktree remove \"$worktree_path\""
         return 0
     fi
 
@@ -173,9 +173,9 @@ clean_worktree() {
 
     # 移除工作区
     if git worktree remove "$worktree_path"; then
-        print_success "Cleaned worktree: $worktree_path"
+        log_success "Cleaned worktree: $worktree_path"
     else
-        print_error "Failed to clean worktree: $worktree_path"
+        log_error "Failed to clean worktree: $worktree_path"
         return 1
     fi
 }
@@ -185,7 +185,7 @@ main() {
     parse_args "$@"
 
     if [[ "$DRY_RUN" == "true" ]]; then
-        print_warning "=== DRY RUN MODE - No actual changes will be made ==="
+        log_warning "=== DRY RUN MODE - No actual changes will be made ==="
     fi
 
     check_environment
@@ -194,15 +194,15 @@ main() {
 
     # Process all non-main worktrees
     mapfile -t worktrees_to_clean < <(get_worktrees)
-    print_info "Processing all non-main worktrees"
+    log_info "Processing all non-main worktrees"
 
     if [[ ${#worktrees_to_clean[@]} -eq 0 ]]; then
-        print_warning "No worktrees selected for cleaning"
+        log_warning "No worktrees selected for cleaning"
         exit 0
     fi
 
     # Safety checks - show status but continue with automatic filtering
-    print_info "Performing safety checks..."
+    log_info "Performing safety checks..."
 
     for worktree in "${worktrees_to_clean[@]}"; do
         local path=$(echo "$worktree" | cut -d'|' -f1)
@@ -259,23 +259,23 @@ main() {
         local branch=$(echo "$worktree" | cut -d'|' -f2)
         local reasons=$(echo "$unsafe_entry" | cut -d'|' -f3-)
 
-        print_warning "Skipped unsafe worktree: $(basename "$path") ($branch)"
+        log_warning "Skipped unsafe worktree: $(basename "$path") ($branch)"
         echo -e "  Reasons: $reasons" | sed 's/\\n/\n  /g'
         skipped_count=$((skipped_count + 1))
     done
 
     # Report final results
-    print_success "Cleaning completed: $success_count cleaned, $skipped_count skipped (unsafe)"
+    log_success "Cleaning completed: $success_count cleaned, $skipped_count skipped (unsafe)"
 
     if [[ "$skipped_count" -gt 0 ]]; then
-        print_info "To clean unsafe worktrees, resolve the safety issues first:"
-        print_info "- Commit or stash uncommitted changes"
-        print_info "- Push unpushed commits to remote"
-        print_info "- Close or merge open PRs"
+        log_info "To clean unsafe worktrees, resolve the safety issues first:"
+        log_info "- Commit or stash uncommitted changes"
+        log_info "- Push unpushed commits to remote"
+        log_info "- Close or merge open PRs"
     fi
 
     if [[ "$success_count" -gt 0 ]] || [[ "$skipped_count" -gt 0 ]]; then
-        print_info "Current worktrees:"
+        log_info "Current worktrees:"
         git worktree list
     fi
 }
@@ -284,7 +284,7 @@ main() {
 cleanup_on_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        print_error "Operation failed with exit code $exit_code"
+        log_error "Operation failed with exit code $exit_code"
     fi
     exit $exit_code
 }
