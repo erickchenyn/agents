@@ -218,11 +218,14 @@ show_worktree_switch_info() {
 execute_hook() {
     local hook_name="$1"
     local worktree_path="$2"
-    local dry_run="${3:-false}"
+    local main_worktree_path="$3"
+    local dry_run="${4:-false}"
 
-    # Get main worktree directory (where we're currently running from)
-    local main_worktree=$(pwd)
-    local hook_script="$main_worktree/.workspace-config/$hook_name.sh"
+    # Use provided main worktree path, fallback to current directory if not provided
+    if [[ -z "$main_worktree_path" ]]; then
+        main_worktree_path=$(pwd)
+    fi
+    local hook_script="$main_worktree_path/.workspace-config/$hook_name.sh"
 
     # Check if hook script exists and is executable
     if [[ ! -f "$hook_script" ]]; then

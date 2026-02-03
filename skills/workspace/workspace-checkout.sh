@@ -186,6 +186,7 @@ create_worktree() {
 setup_worktree() {
     local worktree_path="$1"
     local branch_name="$2"
+    local main_worktree_path="$3"
 
     log_info "Setting up worktree: $worktree_path"
 
@@ -200,7 +201,7 @@ setup_worktree() {
         log_warning "  git config user.email \"$git_user_email\""
         log_warning "  git pull"
         log_warning "  Copy .claude/settings.local.json"
-        execute_hook "post-checkout" "$worktree_path" "true"
+        execute_hook "post-checkout" "$worktree_path" "$main_worktree_path" "true"
         return 0
     fi
 
@@ -227,7 +228,7 @@ setup_worktree() {
     fi
 
     # Execute post-checkout hook
-    execute_hook "post-checkout" "$worktree_path" "false"
+    execute_hook "post-checkout" "$worktree_path" "$main_worktree_path" "false"
 }
 
 # Main execution function
@@ -240,6 +241,9 @@ main() {
 
     check_environment
 
+    # Save main worktree path
+    local main_worktree_path=$(pwd)
+
     # Parse branch name
     local branch_name
     branch_name=$(resolve_branch_name "$BRANCH_OR_PR")
@@ -248,14 +252,14 @@ main() {
     local existing_worktree
     if existing_worktree=$(find_existing_worktree "$branch_name"); then
         log_success "Found existing worktree: $existing_worktree"
-        setup_worktree "$existing_worktree" "$branch_name"
+        setup_worktree "$existing_worktree" "$branch_name" "$main_worktree_path"
 
         show_worktree_switch_info "$existing_worktree"
     else
         log_info "No existing worktree found, creating new one..."
         local new_worktree
         new_worktree=$(create_worktree "$branch_name")
-        setup_worktree "$new_worktree" "$branch_name"
+        setup_worktree "$new_worktree" "$branch_name" "$main_worktree_path"
 
         log_success "Created and switched to new worktree"
 
