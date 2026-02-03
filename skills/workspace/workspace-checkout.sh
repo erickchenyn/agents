@@ -199,8 +199,8 @@ setup_worktree() {
         log_warning "  git config user.name \"$git_user_name\""
         log_warning "  git config user.email \"$git_user_email\""
         log_warning "  git pull"
-        log_warning "  q generate"
         log_warning "  Copy .claude/settings.local.json"
+        execute_hook "post-checkout" "$worktree_path" "true"
         return 0
     fi
 
@@ -216,14 +216,6 @@ setup_worktree() {
     log_info "Updating code..."
     git pull
 
-    # Execute code generation
-    if command -v q >/dev/null 2>&1; then
-        log_info "Running q generate..."
-        q generate --cache=false || log_warning "q generate failed, but continuing..."
-    else
-        log_warning "Command 'q' not found, skipping code generation"
-    fi
-
     # Copy Claude settings
     local main_settings="../$(basename "$(dirname "$worktree_path")")/.claude/settings.local.json"
     if [[ -f "$main_settings" ]]; then
@@ -233,6 +225,9 @@ setup_worktree() {
     else
         log_warning "Main worktree Claude settings not found: $main_settings"
     fi
+
+    # Execute post-checkout hook
+    execute_hook "post-checkout" "$worktree_path" "false"
 }
 
 # Main execution function
