@@ -67,62 +67,6 @@ check_environment() {
 }
 
 
-# Check worktree status
-check_worktree_safety() {
-    local worktree_path="$1"
-    local branch_name="$2"
-    local safety_report=""
-    local is_safe=true
-
-    # Note: Removed log_info to avoid interfering with function output parsing
-
-    # Check if worktree exists
-    if [[ ! -d "$worktree_path" ]]; then
-        safety_report+="⚠️  Worktree directory not found\n"
-        is_safe=false
-        echo -e "$is_safe|$safety_report"
-        return
-    fi
-
-    # Check worktree status
-    if ! (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet); then
-        safety_report+="⚠️  Uncommitted changes detected\n"
-        is_safe=false
-    fi
-
-    # Check unpushed commits
-    if (cd "$worktree_path" && [[ $(git rev-list --count "@{u}"..) -gt 0 ]] 2>/dev/null); then
-        safety_report+="⚠️  Unpushed commits detected\n"
-        is_safe=false
-    fi
-
-    # Check PR status (if GitHub CLI available)
-    if [[ "$GH_AVAILABLE" == "true" ]]; then
-        local pr_status
-        if pr_status=$(gh pr list --head "$branch_name" --json number,state --jq '.[0].state' 2>/dev/null) && [[ -n "$pr_status" ]]; then
-            if [[ "$pr_status" == "OPEN" ]]; then
-                safety_report+="⚠️  Open PR exists for this branch\n"
-                is_safe=false
-            elif [[ "$pr_status" == "MERGED" ]]; then
-                safety_report+="✅ PR has been merged\n"
-            fi
-        fi
-    fi
-
-    # Check remote branch
-    if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null; then
-        safety_report+="ℹ️ Remote branch still exists\n"
-    else
-        safety_report+="✅ Remote branch has been deleted\n"
-    fi
-
-    if [[ "$is_safe" == "true" ]]; then
-        safety_report="✅ Safe to clean\n$safety_report"
-    fi
-
-    echo -e "$is_safe|$safety_report"
-}
-
 
 # Remove worktree
 clean_worktree() {
@@ -174,13 +118,25 @@ main() {
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
-        local safety_result
-        safety_result=$(check_worktree_safety "$path" "$branch")
-        local is_safe=$(echo "$safety_result" | head -1 | cut -d'|' -f1)
-        local report=$(echo "$safety_result" | cut -d'|' -f2-)
+        local safety_json=$(check_worktree_safety "$path" "$branch")
+        local is_safe=$(echo "$safety_json" | jq -r '.safe')
 
         echo "Worktree: $(basename "$path") ($branch)"
-        echo -e "$report"
+
+        # Display warnings
+        echo "$safety_json" | jq -r '.warnings[]' 2>/dev/null | while read -r warning; do
+            [[ -n "$warning" ]] && echo "⚠️  $warning"
+        done
+
+        # Display info
+        echo "$safety_json" | jq -r '.info[]' 2>/dev/null | while read -r info; do
+            [[ -n "$info" ]] && echo "ℹ️ $info"
+        done
+
+        if [[ "$is_safe" == "true" ]]; then
+            echo "✅ Safe to clean"
+        fi
+
         echo ""
     done
 
@@ -196,15 +152,14 @@ main() {
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
 
-        local safety_result
-        safety_result=$(check_worktree_safety "$path" "$branch")
-        local is_safe=$(echo "$safety_result" | head -1 | cut -d'|' -f1)
-        local report=$(echo "$safety_result" | cut -d'|' -f2-)
+        local safety_json=$(check_worktree_safety "$path" "$branch")
+        local is_safe=$(echo "$safety_json" | jq -r '.safe')
 
         if [[ "$is_safe" == "true" ]]; then
             safe_worktrees+=("$worktree")
         else
-            unsafe_worktrees+=("$worktree|$report")
+            # Store JSON with worktree info for unsafe items
+            unsafe_worktrees+=("$worktree|$safety_json")
         fi
     done
 
@@ -223,10 +178,15 @@ main() {
         local worktree=$(echo "$unsafe_entry" | cut -d'|' -f1-2)
         local path=$(echo "$worktree" | cut -d'|' -f1)
         local branch=$(echo "$worktree" | cut -d'|' -f2)
-        local reasons=$(echo "$unsafe_entry" | cut -d'|' -f3-)
+        local safety_json=$(echo "$unsafe_entry" | cut -d'|' -f3-)
 
         log_warning "Skipped unsafe worktree: $(basename "$path") ($branch)"
-        echo -e "  Reasons: $reasons" | sed 's/\\n/\n  /g'
+
+        # Display warnings from JSON
+        echo "$safety_json" | jq -r '.warnings[]' 2>/dev/null | while read -r warning; do
+            [[ -n "$warning" ]] && echo "  ⚠️  $warning"
+        done
+
         skipped_count=$((skipped_count + 1))
     done
 

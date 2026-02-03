@@ -64,9 +64,15 @@ check_environment() {
 
     # Check for uncommitted changes
     if ! git diff --quiet || ! git diff --staged --quiet; then
-        log_warning "Detected uncommitted changes"
+        log_warning "Current workspace has uncommitted changes"
+        echo ""
+        log_info "Creating a new workspace is safe and will not affect your current work:"
+        log_info "  • New workspace will be based on origin/main"
+        log_info "  • Your uncommitted changes will remain in this workspace"
+        log_info "  • You can return here anytime to continue your work"
+        echo ""
         if [[ "$DRY_RUN" == false ]]; then
-            read -p "Continue? (y/N): " -n 1 -r
+            read -p "Continue creating new workspace? (y/N): " -n 1 -r
             echo
             if [[ ! $REPLY =~ ^[Yy]$ ]]; then
                 log_info "Operation cancelled"
@@ -205,7 +211,7 @@ show_completion() {
     echo
 
     # Output switch command directly, users can call with eval $(wc create ...) style
-    echo "cd \"$WORKTREE_PATH\" && cc"
+    echo "cd \"$WORKTREE_PATH\""
 }
 
 # Cleanup function (called on error)
