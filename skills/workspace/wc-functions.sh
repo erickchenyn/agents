@@ -36,11 +36,11 @@ wcreate() {
     fi
 }
 
-# Workspace checkout with auto-switch
-wcheckout() {
+# Workspace switch with auto-switch
+wswitch() {
     # Check if this is a help request
     if [[ "$*" == *"--help"* ]] || [[ "$*" == *"-h"* ]]; then
-        "$WC_SCRIPT_DIR/workspace-checkout.sh" "$@"
+        "$WC_SCRIPT_DIR/workspace-switch.sh" "$@"
         return $?
     fi
 
@@ -48,7 +48,7 @@ wcheckout() {
     local temp_output=$(mktemp)
 
     # Run script with output visible to user, capture exit code
-    "$WC_SCRIPT_DIR/workspace-checkout.sh" "$@" | tee "$temp_output"
+    "$WC_SCRIPT_DIR/workspace-switch.sh" "$@" | tee "$temp_output"
     local exit_code=${PIPESTATUS[0]}
 
     # Get the last line which should be the switch command
@@ -66,9 +66,9 @@ wclean() {
     "$WC_SCRIPT_DIR/workspace-clean.sh" "$@"
 }
 
-# Workspace list (no auto-switch needed)
-wlist() {
-    "$WC_SCRIPT_DIR/workspace-list.sh" "$@"
+# Workspace check (no auto-switch needed)
+wcheck() {
+    "$WC_SCRIPT_DIR/workspace-check.sh" "$@"
 }
 
 # Show usage information
@@ -76,26 +76,24 @@ whelp() {
     echo "Workspace Management Functions:"
     echo ""
     echo "  wcreate [options]             Create new workspace and switch to it"
-    echo "  wcheckout <branch|pr> [opts]  Checkout workspace and switch to it"
-    echo "  wlist [options]               List all workspaces with safety status"
+    echo "  wswitch <branch|pr> [opts]    Switch to workspace and switch to it"
+    echo "  wcheck                        Check all workspaces with safety status"
     echo "  wclean [options]              Clean safe worktrees"
     echo ""
-    echo "wcreate and wcheckout automatically switch to the new workspace directory"
+    echo "wcreate and wswitch automatically switch to the new workspace directory"
     echo "after successful operations."
     echo ""
     echo "Examples:"
     echo "  wcreate                       # Creates and switches to new workspace"
-    echo "  wcheckout 123                 # Checkout PR #123 and switch to it"
-    echo "  wlist                         # List all workspaces with status"
-    echo "  wlist -v                      # List with detailed safety analysis"
-    echo "  wlist -j                      # List in JSON format"
+    echo "  wswitch 123                   # Switch to PR #123 workspace"
+    echo "  wcheck                        # Check all workspaces with status"
     echo "  wclean                        # Clean safe worktrees"
     echo ""
     echo "For detailed options, run:"
     echo "  $WC_SCRIPT_DIR/workspace-create.sh --help"
-    echo "  $WC_SCRIPT_DIR/workspace-checkout.sh --help"
-    echo "  $WC_SCRIPT_DIR/workspace-list.sh --help"
+    echo "  $WC_SCRIPT_DIR/workspace-switch.sh --help"
+    echo "  $WC_SCRIPT_DIR/workspace-check.sh --help"
     echo "  $WC_SCRIPT_DIR/workspace-clean.sh --help"
 }
 
-echo "Workspace functions loaded: wcreate, wcheckout, wlist, wclean, whelp"
+echo "Workspace functions loaded: wcreate, wswitch, wcheck, wclean, whelp"

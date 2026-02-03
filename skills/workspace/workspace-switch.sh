@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# workspace-checkout.sh - Checkout or create workspace for branch/PR based on branch name or GitHub PR ID
-# Script implementation of workspace-checkout skill
+# workspace-switch.sh - Switch to or create workspace for branch/PR based on branch name or GitHub PR ID
+# Script implementation of workspace-switch skill
 
 set -e  # Exit on error
 
@@ -15,7 +15,7 @@ DRY_RUN=false
 # Show help information
 show_help() {
     cat << EOF
-workspace-checkout.sh - Checkout or create workspace for branch/PR
+workspace-switch.sh - Switch to or create workspace for branch/PR
 
 Usage: $0 [OPTIONS] <branch-name|pr-id>
 
@@ -83,7 +83,7 @@ parse_args() {
 # Check environment
 check_environment() {
     # Use common environment check function
-    check_workspace_environment "workspace-checkout"
+    check_workspace_environment "workspace-switch"
 
     # Check necessary commands - GitHub CLI is required
     if ! command -v gh >/dev/null 2>&1; then
@@ -201,7 +201,7 @@ setup_worktree() {
         log_warning "  git config user.email \"$git_user_email\""
         log_warning "  git pull"
         log_warning "  Copy .claude/settings.local.json"
-        execute_hook "post-checkout" "$worktree_path" "$main_worktree_path" "true"
+        execute_hook "post-switch" "$worktree_path" "$main_worktree_path" "true"
         return 0
     fi
 
@@ -227,8 +227,8 @@ setup_worktree() {
         log_warning "Main worktree Claude settings not found: $main_settings"
     fi
 
-    # Execute post-checkout hook
-    execute_hook "post-checkout" "$worktree_path" "$main_worktree_path" "false"
+    # Execute post-switch hook
+    execute_hook "post-switch" "$worktree_path" "$main_worktree_path" "false"
 }
 
 # Main execution function
