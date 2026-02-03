@@ -1,12 +1,12 @@
 ---
-name: workspace-checkout
+name: workspace-switch
 description: 根据提供的分支名或 GitHub PR ID，查找本地对应的 worktree。如果不存在则创建新的 worktree，如果存在则直接切换
 ---
 
 ## 执行流程
 
 1. **调用脚本执行切换操作**
-   - 使用 Bash 工具调用 `workspace-checkout.sh` 脚本（位于 `~/.claude/skills/workspace/` 目录）
+   - 使用 Bash 工具调用 `workspace-switch.sh` 脚本（位于 `~/.claude/skills/workspace/` 目录）
    - 传递用户提供的分支名或 PR ID 作为参数
    - 传递其他可选参数（如 `-u` 用户名、`-e` 邮箱、`-d` 预览模式等）
    - 捕获脚本的输出结果和执行状态
