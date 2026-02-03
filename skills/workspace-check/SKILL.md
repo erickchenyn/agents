@@ -1,6 +1,6 @@
 ---
 name: workspace-check
-description: 检查所有 workspace 工作区的状态，显示哪些可以安全清理
+description: 检查所有 workspace 工作区的详细状态，显示综合信息表格包括安全性、PR 状态等
 ---
 
 ## 执行流程

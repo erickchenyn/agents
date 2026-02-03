@@ -1,5 +1,5 @@
 ---
-name: moxt-project-repo-debug
+name: moxt-project-repo
 description: clone paraflow 项目的 git 仓库并进行分析
 ---
 

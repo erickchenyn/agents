@@ -1,6 +1,6 @@
 ---
 name: workspace-clean
-description: 清理安全的 git worktree，并将其 Claude 配置合并回主工作区以保持记忆延续
+description: 安全清理 git worktrees，仅删除无未提交改动、无未推送提交、无打开 PR 的工作区
 ---
 
 ## 执行流程

@@ -1,6 +1,6 @@
 ---
 name: workspace-switch
-description: 根据提供的分支名或 GitHub PR ID，查找本地对应的 worktree。如果不存在则创建新的 worktree，如果存在则直接切换
+description: 智能切换到指定分支或 PR 的 worktree，不存在时自动创建，支持 PR ID 数字识别
 ---
 
 ## 执行流程
