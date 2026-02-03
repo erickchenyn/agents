@@ -36,6 +36,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 - [ ] 使用 AskUser 工具来询问是否要自动合并 PR
   - 否：则你的工作完成，跳过以下所有步骤
   - 是：你要继续完成以下工作
+    - [ ] **重要**: 使用 squash merge 或 rebase merge 来合并 PR，绝不使用 regular merge 来保持线性历史
     - [ ] 将 PR 加入合并队列，然后等待直到 PR 被成功合并
     - [ ] 确认 feature 分支在远程已被删除，然后在本地切回 main 分支
     - [ ] 如 PR 有关联的 Issue，关闭 Issue
@@ -44,3 +45,12 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 
 - 你可以在 git 仓库下使用 gh cli 来操作 Git
 - 你需要确保 git user 信息有效，邮箱必须是 `erick.chen@paraflow.com`
+
+# 保持线性历史
+
+**重要要求**: 仓库必须维护线性的 git 历史，绝不允许出现 merge commit
+
+- 在创建 PR 时，设置合并策略为 squash merge 或 rebase merge
+- 使用 `gh pr merge --squash` 或 `gh pr merge --rebase` 命令
+- 绝不使用 `gh pr merge --merge` 命令，因为它会创建 merge commit
+- 如果发现历史中有 merge commit，需要使用 `git rebase` 来清理历史
