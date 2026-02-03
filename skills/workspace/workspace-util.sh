@@ -217,50 +217,31 @@ show_worktree_switch_info() {
     echo "cd \"$worktree_path\""
 }
 
-# Check worktree safety status with structured output
+# Check worktree safety status - returns 0 if safe, 1 if unsafe
+# Prints relevant information during checking
 check_worktree_safety() {
     local worktree_path="$1"
     local branch_name="$2"
 
-    local is_safe=true
-    local issues=()
-    local info=()
-    local warnings=()
-    local has_uncommitted=false
-    local has_unpushed=false
-    local has_open_pr=false
-    local remote_branch_exists=false
-
     # Check if worktree exists
     if [[ ! -d "$worktree_path" ]]; then
-        is_safe=false
-        issues+=("worktree_missing")
-        warnings+=("Worktree directory not found")
-        # Return early for missing worktree
-        printf '{"safe":%s,"issues":%s,"warnings":%s,"info":%s,"details":{"uncommitted":%s,"unpushed":%s,"open_pr":%s,"remote_exists":%s}}' \
-            "$([[ $is_safe == true ]] && echo "true" || echo "false")" \
-            "$(printf '["%s"]' "$(IFS='","'; echo "${issues[*]}")")" \
-            "$(printf '["%s"]' "$(IFS='","'; echo "${warnings[*]}")")" \
-            "$(printf '["%s"]' "$(IFS='","'; echo "${info[*]}")")" \
-            "false" "false" "false" "false"
-        return
+        log_error "Worktree directory not found: $worktree_path"
+        return 1
     fi
+
+    local is_safe=true
 
     # Check worktree status (uncommitted changes)
     if ! (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet); then
+        log_warning "⚠️ Uncommitted changes detected"
         is_safe=false
-        has_uncommitted=true
-        issues+=("uncommitted_changes")
-        warnings+=("Uncommitted changes detected")
     fi
 
     # Check unpushed commits
     local unpushed_count=0
     if unpushed_count=$(cd "$worktree_path" && git rev-list --count "@{u}"..) 2>/dev/null && [[ "$unpushed_count" -gt 0 ]]; then
+        log_warning "⚠️ $unpushed_count unpushed commits detected"
         is_safe=false
-        has_unpushed=true
-        issues+=("unpushed_commits")
-        warnings+=("$unpushed_count unpushed commits detected")
     fi
 
     # Check PR status (if GitHub CLI available)
@@ -271,34 +252,27 @@ check_worktree_safety() {
             local pr_number=$(echo "$pr_info" | jq -r '.[0].number' 2>/dev/null)
 
             if [[ "$pr_state" == "OPEN" ]]; then
+                log_warning "⚠️ Open PR #$pr_number exists for this branch"
                 is_safe=false
-                has_open_pr=true
-                issues+=("open_pr")
-                warnings+=("Open PR #$pr_number exists for this branch")
             elif [[ "$pr_state" == "MERGED" ]]; then
-                info+=("PR #$pr_number has been merged")
+                log_info "ℹ️ PR #$pr_number has been merged"
             fi
         fi
     fi
 
     # Check remote branch
     if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null; then
-        remote_branch_exists=true
-        info+=("Remote branch exists")
+        log_info "ℹ️ Remote branch exists"
     else
-        info+=("Remote branch has been deleted")
+        log_info "ℹ️ Remote branch has been deleted"
     fi
 
-    # Output structured JSON
-    printf '{"safe":%s,"issues":%s,"warnings":%s,"info":%s,"details":{"uncommitted":%s,"unpushed":%s,"open_pr":%s,"remote_exists":%s}}' \
-        "$([[ $is_safe == true ]] && echo "true" || echo "false")" \
-        "$(printf '[%s]' "$(printf '"%s",' "${issues[@]}" | sed 's/,$//')")" \
-        "$(printf '[%s]' "$(printf '"%s",' "${warnings[@]}" | sed 's/,$//')")" \
-        "$(printf '[%s]' "$(printf '"%s",' "${info[@]}" | sed 's/,$//')")" \
-        "$([[ $has_uncommitted == true ]] && echo "true" || echo "false")" \
-        "$([[ $has_unpushed == true ]] && echo "true" || echo "false")" \
-        "$([[ $has_open_pr == true ]] && echo "true" || echo "false")" \
-        "$([[ $remote_branch_exists == true ]] && echo "true" || echo "false")"
+    # Return success (0) if safe, failure (1) if unsafe
+    if [[ "$is_safe" == "true" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 # Execute project hook if it exists

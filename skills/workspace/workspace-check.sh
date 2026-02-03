@@ -64,13 +64,10 @@ check_worktrees() {
         local branch=$(echo "$worktree" | cut -d'|' -f2)
         local name=$(basename "$path")
 
-        # Get safety status
-        local safety_json=$(check_worktree_safety "$path" "$branch")
-        local is_safe=$(echo "$safety_json" | jq -r '.safe')
-
         printf "%-40s %-30s " "$name" "$branch"
 
-        if [[ "$is_safe" == "true" ]]; then
+        # Check safety and show result
+        if check_worktree_safety "$path" "$branch" >/dev/null 2>&1; then
             echo "✅ Safe to clean"
             safe_count=$((safe_count + 1))
         else
