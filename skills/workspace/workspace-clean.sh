@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# workspace-clean.sh - Clean specified git worktree and merge its Claude configuration back to main workspace
+# workspace-clean.sh - Clean specified git worktree
 # Script implementation of workspace-clean skill
 
 set -e  # Exit on error
@@ -15,7 +15,7 @@ DRY_RUN=false
 # Show help information
 show_help() {
     cat << EOF
-workspace-clean.sh - Clean git worktree and merge Claude settings
+workspace-clean.sh - Clean git worktrees safely
 
 Usage: $0 [OPTIONS]
 
@@ -124,37 +124,6 @@ check_worktree_safety() {
 }
 
 
-# Backup and merge Claude settings
-backup_claude_settings() {
-    local worktree_path="$1"
-    local worktree_settings="$worktree_path/.claude/settings.local.json"
-    local main_settings=".claude/settings.local.json"
-
-    if [[ ! -f "$worktree_settings" ]]; then
-        return 0
-    fi
-
-    log_info "Backing up Claude settings from: $worktree_path"
-
-    if [[ "$DRY_RUN" == "true" ]]; then
-        log_warning "[DRY RUN] Would merge Claude settings:"
-        log_warning "  From: $worktree_settings"
-        log_warning "  To: $main_settings"
-        return 0
-    fi
-
-    # Simple merge: copy if main settings don't exist, warn if they do exist
-    if [[ ! -f "$main_settings" ]]; then
-        mkdir -p "$(dirname "$main_settings")"
-        cp "$worktree_settings" "$main_settings"
-        log_success "Copied Claude settings to main worktree"
-    else
-        log_warning "Main worktree already has Claude settings, manual merge may be needed"
-        log_info "Worktree settings: $worktree_settings"
-        log_info "Main settings: $main_settings"
-    fi
-}
-
 # Remove worktree
 clean_worktree() {
     local worktree_path="$1"
@@ -167,9 +136,6 @@ clean_worktree() {
         log_warning "  git worktree remove \"$worktree_path\""
         return 0
     fi
-
-    # Backup Claude settings
-    backup_claude_settings "$worktree_path"
 
     # Remove worktree
     if git worktree remove "$worktree_path"; then
