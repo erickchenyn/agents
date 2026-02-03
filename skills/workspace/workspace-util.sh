@@ -148,7 +148,7 @@ get_worktrees() {
         elif [[ "$line" =~ ^branch ]]; then
             current_branch=$(echo "$line" | sed 's/^branch refs\/heads\///')
         elif [[ "$line" =~ ^bare ]] || [[ -z "$line" ]]; then
-            # Skip bare repository or empty line
+            # Process completed worktree entry (bare repository line or empty line)
             if [[ ! "$line" =~ ^bare ]] && [[ -n "$current_worktree" ]] && [[ -n "$current_branch" ]]; then
                 # Skip main worktree (current directory)
                 if [[ "$current_worktree" != "$(pwd)" ]]; then
@@ -160,7 +160,10 @@ get_worktrees() {
         fi
     done < <(git worktree list --porcelain)
 
-    printf '%s\n' "${worktrees[@]}"
+    # Only output non-empty worktree entries
+    for worktree in "${worktrees[@]}"; do
+        [[ -n "$worktree" ]] && printf '%s\n' "$worktree"
+    done
 }
 
 # Check if necessary commands are available
@@ -211,7 +214,91 @@ show_worktree_switch_info() {
     local worktree_path="$1"
 
     # Output switch command directly, users can call with eval $(wc ...) style
-    echo "cd \"$worktree_path\" && cc"
+    echo "cd \"$worktree_path\""
+}
+
+# Check worktree safety status with structured output
+check_worktree_safety() {
+    local worktree_path="$1"
+    local branch_name="$2"
+
+    local is_safe=true
+    local issues=()
+    local info=()
+    local warnings=()
+    local has_uncommitted=false
+    local has_unpushed=false
+    local has_open_pr=false
+    local remote_branch_exists=false
+
+    # Check if worktree exists
+    if [[ ! -d "$worktree_path" ]]; then
+        is_safe=false
+        issues+=("worktree_missing")
+        warnings+=("Worktree directory not found")
+        # Return early for missing worktree
+        printf '{"safe":%s,"issues":%s,"warnings":%s,"info":%s,"details":{"uncommitted":%s,"unpushed":%s,"open_pr":%s,"remote_exists":%s}}' \
+            "$([[ $is_safe == true ]] && echo "true" || echo "false")" \
+            "$(printf '["%s"]' "$(IFS='","'; echo "${issues[*]}")")" \
+            "$(printf '["%s"]' "$(IFS='","'; echo "${warnings[*]}")")" \
+            "$(printf '["%s"]' "$(IFS='","'; echo "${info[*]}")")" \
+            "false" "false" "false" "false"
+        return
+    fi
+
+    # Check worktree status (uncommitted changes)
+    if ! (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet); then
+        is_safe=false
+        has_uncommitted=true
+        issues+=("uncommitted_changes")
+        warnings+=("Uncommitted changes detected")
+    fi
+
+    # Check unpushed commits
+    local unpushed_count=0
+    if unpushed_count=$(cd "$worktree_path" && git rev-list --count "@{u}"..) 2>/dev/null && [[ "$unpushed_count" -gt 0 ]]; then
+        is_safe=false
+        has_unpushed=true
+        issues+=("unpushed_commits")
+        warnings+=("$unpushed_count unpushed commits detected")
+    fi
+
+    # Check PR status (if GitHub CLI available)
+    if [[ "$GH_AVAILABLE" == "true" ]]; then
+        local pr_info
+        if pr_info=$(gh pr list --head "$branch_name" --json number,state,title 2>/dev/null) && [[ "$pr_info" != "[]" ]]; then
+            local pr_state=$(echo "$pr_info" | jq -r '.[0].state' 2>/dev/null)
+            local pr_number=$(echo "$pr_info" | jq -r '.[0].number' 2>/dev/null)
+
+            if [[ "$pr_state" == "OPEN" ]]; then
+                is_safe=false
+                has_open_pr=true
+                issues+=("open_pr")
+                warnings+=("Open PR #$pr_number exists for this branch")
+            elif [[ "$pr_state" == "MERGED" ]]; then
+                info+=("PR #$pr_number has been merged")
+            fi
+        fi
+    fi
+
+    # Check remote branch
+    if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null; then
+        remote_branch_exists=true
+        info+=("Remote branch exists")
+    else
+        info+=("Remote branch has been deleted")
+    fi
+
+    # Output structured JSON
+    printf '{"safe":%s,"issues":%s,"warnings":%s,"info":%s,"details":{"uncommitted":%s,"unpushed":%s,"open_pr":%s,"remote_exists":%s}}' \
+        "$([[ $is_safe == true ]] && echo "true" || echo "false")" \
+        "$(printf '[%s]' "$(printf '"%s",' "${issues[@]}" | sed 's/,$//')")" \
+        "$(printf '[%s]' "$(printf '"%s",' "${warnings[@]}" | sed 's/,$//')")" \
+        "$(printf '[%s]' "$(printf '"%s",' "${info[@]}" | sed 's/,$//')")" \
+        "$([[ $has_uncommitted == true ]] && echo "true" || echo "false")" \
+        "$([[ $has_unpushed == true ]] && echo "true" || echo "false")" \
+        "$([[ $has_open_pr == true ]] && echo "true" || echo "false")" \
+        "$([[ $remote_branch_exists == true ]] && echo "true" || echo "false")"
 }
 
 # Execute project hook if it exists
