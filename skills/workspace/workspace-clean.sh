@@ -74,7 +74,7 @@ check_worktree_safety() {
     local safety_report=""
     local is_safe=true
 
-    log_info "Checking safety for: $worktree_path ($branch_name)"
+    # Note: Removed log_info to avoid interfering with function output parsing
 
     # Check if worktree exists
     if [[ ! -d "$worktree_path" ]]; then
@@ -176,7 +176,7 @@ main() {
 
         local safety_result
         safety_result=$(check_worktree_safety "$path" "$branch")
-        local is_safe=$(echo "$safety_result" | cut -d'|' -f1)
+        local is_safe=$(echo "$safety_result" | head -1 | cut -d'|' -f1)
         local report=$(echo "$safety_result" | cut -d'|' -f2-)
 
         echo "Worktree: $(basename "$path") ($branch)"
@@ -198,7 +198,7 @@ main() {
 
         local safety_result
         safety_result=$(check_worktree_safety "$path" "$branch")
-        local is_safe=$(echo "$safety_result" | cut -d'|' -f1)
+        local is_safe=$(echo "$safety_result" | head -1 | cut -d'|' -f1)
         local report=$(echo "$safety_result" | cut -d'|' -f2-)
 
         if [[ "$is_safe" == "true" ]]; then
