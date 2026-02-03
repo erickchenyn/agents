@@ -182,7 +182,7 @@ initialize_workspace() {
         fi
 
         # Execute post-create hook
-        execute_hook "post-create" "$WORKTREE_PATH" "false"
+        execute_hook "post-create" "$WORKTREE_PATH" "$CURRENT_DIR" "false"
 
         # Return to original directory
         cd "$CURRENT_DIR"
@@ -191,7 +191,7 @@ initialize_workspace() {
         log_info "[DRY RUN] Would execute in new workspace:"
         log_info "[DRY RUN]   - Set git user: $git_user_name <$git_user_email>"
         log_info "[DRY RUN]   - Copy: .claude/settings.local.json"
-        execute_hook "post-create" "$WORKTREE_PATH" "true"
+        execute_hook "post-create" "$WORKTREE_PATH" "$CURRENT_DIR" "true"
     fi
 }
 
