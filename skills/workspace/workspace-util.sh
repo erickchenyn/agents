@@ -166,6 +166,38 @@ get_worktrees() {
     done
 }
 
+# Get list of ALL git worktrees in format "path|branch|is_current"
+get_all_worktrees() {
+    local worktrees=()
+    local current_worktree=""
+    local current_branch=""
+    local current_pwd=$(pwd)
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^worktree ]]; then
+            current_worktree=$(echo "$line" | cut -d' ' -f2-)
+        elif [[ "$line" =~ ^branch ]]; then
+            current_branch=$(echo "$line" | sed 's/^branch refs\/heads\///')
+        elif [[ "$line" =~ ^bare ]] || [[ -z "$line" ]]; then
+            # Process completed worktree entry (bare repository line or empty line)
+            if [[ ! "$line" =~ ^bare ]] && [[ -n "$current_worktree" ]] && [[ -n "$current_branch" ]]; then
+                local is_current="false"
+                if [[ "$current_worktree" == "$current_pwd" ]]; then
+                    is_current="true"
+                fi
+                worktrees+=("$current_worktree|$current_branch|$is_current")
+            fi
+            current_worktree=""
+            current_branch=""
+        fi
+    done < <(git worktree list --porcelain)
+
+    # Only output non-empty worktree entries
+    for worktree in "${worktrees[@]}"; do
+        [[ -n "$worktree" ]] && printf '%s\n' "$worktree"
+    done
+}
+
 # Check if necessary commands are available
 check_gh_available() {
     if command -v gh >/dev/null 2>&1; then
@@ -314,5 +346,49 @@ execute_hook() {
     else
         log_warning "$hook_name hook failed, but continuing..."
         return 1
+    fi
+}
+
+# Check if worktree has uncommitted changes
+has_uncommitted_changes() {
+    local worktree_path="$1"
+    ! (cd "$worktree_path" && git diff --quiet && git diff --cached --quiet)
+}
+
+# Check if remote branch exists
+remote_branch_exists() {
+    local branch_name="$1"
+    git ls-remote --heads origin "$branch_name" | grep -q "$branch_name" 2>/dev/null
+}
+
+# Check if branch has open PR
+has_open_pr() {
+    local branch_name="$1"
+    if [[ "$GH_AVAILABLE" != "true" ]]; then
+        return 1  # Cannot determine PR status without gh
+    fi
+
+    local pr_info
+    if pr_info=$(gh pr list --head "$branch_name" --json number,state 2>/dev/null) && [[ "$pr_info" != "[]" ]]; then
+        local pr_state=$(echo "$pr_info" | jq -r '.[0].state' 2>/dev/null)
+        [[ "$pr_state" == "OPEN" ]]
+    else
+        return 1
+    fi
+}
+
+# Get PR number for branch (returns empty if no PR)
+get_pr_number() {
+    local branch_name="$1"
+    if [[ "$GH_AVAILABLE" != "true" ]]; then
+        echo ""
+        return
+    fi
+
+    local pr_info
+    if pr_info=$(gh pr list --head "$branch_name" --json number 2>/dev/null) && [[ "$pr_info" != "[]" ]]; then
+        echo "$pr_info" | jq -r '.[0].number' 2>/dev/null
+    else
+        echo ""
     fi
 }
