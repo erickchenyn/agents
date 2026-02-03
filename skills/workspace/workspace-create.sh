@@ -169,18 +169,6 @@ initialize_workspace() {
         git config user.email "$git_user_email"
         log_success "Git user information configured: $git_user_name <$git_user_email>"
 
-        # Check if q command exists
-        if command -v q > /dev/null 2>&1; then
-            log_info "Running code generation..."
-            if q generate; then
-                log_success "Code generation completed"
-            else
-                log_warning "Code generation failed, but continuing"
-            fi
-        else
-            log_warning "Command 'q' not found, skipping code generation"
-        fi
-
         # Copy Claude settings
         local source_settings="${CURRENT_DIR}/.claude/settings.local.json"
         local target_settings=".claude/settings.local.json"
@@ -193,14 +181,17 @@ initialize_workspace() {
             log_warning "Claude settings file not found: $source_settings"
         fi
 
+        # Execute post-create hook
+        execute_hook "post-create" "$WORKTREE_PATH" "false"
+
         # Return to original directory
         cd "$CURRENT_DIR"
 
     else
         log_info "[DRY RUN] Would execute in new workspace:"
         log_info "[DRY RUN]   - Set git user: $git_user_name <$git_user_email>"
-        log_info "[DRY RUN]   - Execute: q generate"
         log_info "[DRY RUN]   - Copy: .claude/settings.local.json"
+        execute_hook "post-create" "$WORKTREE_PATH" "true"
     fi
 }
 

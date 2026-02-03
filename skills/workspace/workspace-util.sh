@@ -213,3 +213,42 @@ show_worktree_switch_info() {
     # Output switch command directly, users can call with eval $(wc ...) style
     echo "cd \"$worktree_path\" && cc"
 }
+
+# Execute project hook if it exists
+execute_hook() {
+    local hook_name="$1"
+    local worktree_path="$2"
+    local dry_run="${3:-false}"
+
+    # Get main worktree directory (where we're currently running from)
+    local main_worktree=$(pwd)
+    local hook_script="$main_worktree/.workspace-config/$hook_name.sh"
+
+    # Check if hook script exists and is executable
+    if [[ ! -f "$hook_script" ]]; then
+        log_info "No $hook_name hook found (.workspace-config/$hook_name.sh)"
+        return 0
+    fi
+
+    if [[ ! -x "$hook_script" ]]; then
+        log_warning "Hook script exists but is not executable: $hook_script"
+        log_info "Run: chmod +x $hook_script"
+        return 0
+    fi
+
+    log_info "Executing $hook_name hook..."
+
+    if [[ "$dry_run" == "true" ]]; then
+        log_warning "[DRY RUN] Would execute hook: $hook_script"
+        log_warning "[DRY RUN] Working directory: $worktree_path"
+        return 0
+    fi
+
+    # Execute hook in the context of the new worktree
+    if (cd "$worktree_path" && "$hook_script"); then
+        log_success "$hook_name hook executed successfully"
+    else
+        log_warning "$hook_name hook failed, but continuing..."
+        return 1
+    fi
+}
