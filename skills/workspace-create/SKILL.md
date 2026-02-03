@@ -1,6 +1,6 @@
 ---
 name: workspace-create
-description: 基于当前项目的 origin/main 创建一个新的 git worktree 和分支，用于并行开发
+description: 基于 origin/main 创建新的 git worktree 和分支，自动配置并切换到新工作区用于并行开发
 ---
 
 ## 执行流程
