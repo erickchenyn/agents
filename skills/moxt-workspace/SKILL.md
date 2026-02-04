@@ -3,7 +3,7 @@ name: moxt-workspace
 description: 使用 worktree 能力切换不同 workspace 并行工作
 ---
 
-**重要：不直接操作 worktree，参考下面提供的 shell 脚本提示用户进行操作：**
+确保下列脚本代码存在于用户的 zsh 或 bash 配置中，提示用户使用 `wl wc wa wr` 切换工作区。
 
 ```bash
 # worktree

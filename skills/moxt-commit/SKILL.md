@@ -1,5 +1,5 @@
 ---
-name: github-commit
+name: moxt-commit
 description: 提交代码、跟踪 PR 状态、完成代码合并
 ---
 
@@ -37,7 +37,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
   - 否：则你的工作完成，跳过以下所有步骤
   - 是：你要继续完成以下工作
     - [ ] 将 PR 加入合并队列或者确保使用 squash merge 或 rebase merge 来合并 PR
-    - [ ] 等待 PR 被成功合并，确认 feature 分支在远程已被删除，然后在本地切回 main 分支
+    - [ ] 等待 PR 被成功合并，确认 feature 分支在远程已被删除
     - [ ] 如 PR 有关联的 Issue，关闭 Issue
 
 # 相关工具说明
