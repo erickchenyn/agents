@@ -1,5 +1,5 @@
 ---
-name: 我的 AGENT 工作流
+name: AGENT 工作流 Issue 模板
 about: 为 Agent 初始化工作流创建 Issue 的模板
 title: ''
 labels: ''
@@ -30,4 +30,4 @@ assignees: erickchenyn
 * 分析问题，和我讨论清楚细节并沟通方案，先不要修改任何代码
   * 如果和客户端项目/编辑器/画布区加载、git 或数据同步性能有关，可以使用我个人的 moxt-performance skill 帮助分析
 * 和我的每一轮会话结束后，都要总结一下并 comment 到 issue 中，作为讨论过程的记录（**重要**：关键信息如分析结果、实现方案等，必须足够详细清晰，尽可能使用列表、表格、流程图等更直观的表达方式）
-* 如果修改了代码，你需要用我个人的 moxt-commit skill 来提交代码创建 pr 并让我 review，不要着急合并 pr
+* 每次修改代码后，你都需要用我个人的 moxt-commit skill 来提交代码创建 pr 并让我 review，但不要着急合并 pr
