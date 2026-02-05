@@ -21,5 +21,5 @@ assignees: erickchenyn
   * 如果包含 paraflow replay 链接，可以使用 moxt-cli 的 project:replay 拉取 url 参数中的回放文件到本地暂存以做分析（这个能力在 moxt 项目中，后续可以使用 moxt 项目中的 replay-data-analysis skill 帮助分析）
 * 分析问题，和我讨论清楚细节并沟通可执行方案，先不要修改任何代码
   * 如果和客户端项目/编辑器/画布区加载、git 或数据同步性能有关，可以使用我个人的 moxt-performance skill 帮助分析
-* 咱俩的每一轮会话结束后，都要总结一下并 comment 到 issue 中，作为讨论过程的记录（**重要**：关键信息如分析结果、实现方案等，必须足够详细清晰，尽可能使用列表、表格、流程图等更直观的表达方式）
-* 你每次修改代码后，都要用我个人的 moxt-commit skill 来提交代码创建 pr 并让我 review，注意先不要合并 pr，要把 pr 关联到这个 issue 上
+- **重要**：每一轮会话结束后，都要总结一下并 comment 到 issue 中，不用我确认。关键信息如分析结果、实现方案等，必须足够详细清晰，尽可能使用列表、表格、流程图等更直观的表达方式
+- **重要**：每次修改代码后，都要用我个人的 moxt-commit skill 来提交代码创建 pr 并把 pr 关联到这个 issue 上。不用我确认，但注意先不要合并 pr
