@@ -9,7 +9,9 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 
 ## 提交代码和 PR
 
-- [ ] 如果当前在 main 分支上，先创建新的 feature 分支，分支名以 `chenyn/` 开头，分支名遵守 kebab-case。任何时候不应该在 main 分支上直接提交代码
+- [ ] 如果当前在 main 分支上，先创建新的 feature 分支，分支名以 `chenyn/` 开头，分支名遵守 kebab-case
+  - 不应该在 main 分支上直接提交代码
+  - 不应该使用 amend 修改已经提交的 commit 而是创建新的 commit
 - [ ] Commit message 应该符合 Angular Conventional 规范，message 应使用英文且不使用 Scope
 - [ ] 在提交最后记录 `Co-Authored-By: Claude <noreply@anthropic.com>`
 - [ ] 成功创建 Commit 之后自动推送到远程
