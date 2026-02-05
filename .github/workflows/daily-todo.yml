@@ -1,0 +1,234 @@
+name: daily-todo
+
+on:
+  schedule:
+    # 北京时间每天早上 10:00 (UTC+8)，对应 UTC 时间 02:00
+    - cron: '0 2 * * *'
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  daily-todo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install moxt-cli
+        run: npm install -g @anthropic-ai/moxt-cli
+
+      - name: Query Jira tasks
+        id: jira
+        env:
+          ATLASSIAN_API_TOKEN: ${{ secrets.ATLASSIAN_API_TOKEN }}
+          ATLASSIAN_EMAIL: ${{ secrets.ATLASSIAN_EMAIL }}
+        run: |
+          # Query Jira issues assigned to me
+          JIRA_RESULT=$(moxt jira search \
+            --project MOXT \
+            --assignee currentUser \
+            --status 'not in (Done, Closed, Resolved, Validated)' \
+            --type 'Story, SubTask, Task, Bug' \
+            --format json 2>/dev/null || echo '[]')
+
+          echo "jira_result<<EOF" >> $GITHUB_OUTPUT
+          echo "$JIRA_RESULT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Query GitHub Issues and PRs
+        id: github
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          USERNAME=$(gh api user --jq '.login')
+
+          # Issues assigned to me
+          ISSUES_ASSIGNED=$(gh api "search/issues?q=is:issue+is:open+assignee:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # Issues mentioning me
+          ISSUES_MENTIONS=$(gh api "search/issues?q=is:issue+is:open+mentions:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # Issues created by me
+          ISSUES_CREATED=$(gh api "search/issues?q=is:issue+is:open+author:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # PRs assigned to me
+          PRS_ASSIGNED=$(gh api "search/issues?q=is:pr+is:open+assignee:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # PRs requesting my review
+          PRS_REVIEW=$(gh api "search/issues?q=is:pr+is:open+review-requested:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # PRs mentioning me
+          PRS_MENTIONS=$(gh api "search/issues?q=is:pr+is:open+mentions:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # PRs created by me
+          PRS_CREATED=$(gh api "search/issues?q=is:pr+is:open+author:${USERNAME}" --jq '.items | map({number, title, html_url, repo: .repository_url | split("/") | .[-1]})' 2>/dev/null || echo '[]')
+
+          # Combine results
+          cat > /tmp/github_result.json << EOF
+          {
+            "issues": {
+              "assigned": $ISSUES_ASSIGNED,
+              "mentions": $ISSUES_MENTIONS,
+              "created": $ISSUES_CREATED
+            },
+            "prs": {
+              "assigned": $PRS_ASSIGNED,
+              "review_requested": $PRS_REVIEW,
+              "mentions": $PRS_MENTIONS,
+              "created": $PRS_CREATED
+            }
+          }
+          EOF
+
+          echo "github_result_file=/tmp/github_result.json" >> $GITHUB_OUTPUT
+
+      - name: Generate report
+        id: report
+        run: |
+          cat > /tmp/generate_report.js << 'SCRIPT'
+          const fs = require('fs');
+
+          // Read GitHub result
+          const githubResult = JSON.parse(fs.readFileSync(process.env.GITHUB_RESULT_FILE, 'utf8'));
+
+          // Build Slack message blocks
+          const blocks = [];
+          const textSections = [];
+
+          // Header
+          blocks.push({
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: "📋 每日待办事项",
+              emoji: true
+            }
+          });
+
+          blocks.push({
+            type: "context",
+            elements: [{
+              type: "mrkdwn",
+              text: `📅 ${new Date().toLocaleDateString('zh-CN', { timeZone: 'Asia/Shanghai' })}`
+            }]
+          });
+
+          blocks.push({ type: "divider" });
+
+          // GitHub Issues section
+          const { issues, prs } = githubResult;
+
+          let issueText = "*🐙 GitHub Issues*\n\n";
+
+          if (issues.assigned.length > 0) {
+            issueText += `*分配给我的 (${issues.assigned.length})*\n`;
+            issues.assigned.forEach(i => {
+              issueText += `• <${i.html_url}|#${i.number}> ${i.title}\n`;
+            });
+            issueText += "\n";
+          }
+
+          if (issues.review_requested?.length > 0) {
+            issueText += `*请求我 Review 的 (${issues.review_requested.length})*\n`;
+            issues.review_requested.forEach(i => {
+              issueText += `• <${i.html_url}|#${i.number}> ${i.title}\n`;
+            });
+            issueText += "\n";
+          }
+
+          if (issues.mentions.length > 0) {
+            issueText += `*提到我的 (${issues.mentions.length})*\n`;
+            issues.mentions.forEach(i => {
+              issueText += `• <${i.html_url}|#${i.number}> ${i.title}\n`;
+            });
+            issueText += "\n";
+          }
+
+          if (issues.created.length > 0) {
+            issueText += `*我创建的 (${issues.created.length})*\n`;
+            issues.created.forEach(i => {
+              issueText += `• <${i.html_url}|#${i.number}> ${i.title}\n`;
+            });
+          }
+
+          if (issues.assigned.length === 0 && issues.mentions.length === 0 && issues.created.length === 0) {
+            issueText += "_暂无 Issue_";
+          }
+
+          blocks.push({
+            type: "section",
+            text: { type: "mrkdwn", text: issueText }
+          });
+
+          blocks.push({ type: "divider" });
+
+          // GitHub PRs section
+          let prText = "*🔀 GitHub PRs*\n\n";
+
+          if (prs.assigned.length > 0) {
+            prText += `*分配给我的 (${prs.assigned.length})*\n`;
+            prs.assigned.forEach(p => {
+              prText += `• <${p.html_url}|#${p.number}> ${p.title}\n`;
+            });
+            prText += "\n";
+          }
+
+          if (prs.review_requested.length > 0) {
+            prText += `*请求我 Review 的 (${prs.review_requested.length})*\n`;
+            prs.review_requested.forEach(p => {
+              prText += `• <${p.html_url}|#${p.number}> ${p.title}\n`;
+            });
+            prText += "\n";
+          }
+
+          if (prs.mentions.length > 0) {
+            prText += `*提到我的 (${prs.mentions.length})*\n`;
+            prs.mentions.forEach(p => {
+              prText += `• <${p.html_url}|#${p.number}> ${p.title}\n`;
+            });
+            prText += "\n";
+          }
+
+          if (prs.created.length > 0) {
+            prText += `*我创建的 (${prs.created.length})*\n`;
+            prs.created.forEach(p => {
+              prText += `• <${p.html_url}|#${p.number}> ${p.title}\n`;
+            });
+          }
+
+          if (prs.assigned.length === 0 && prs.review_requested.length === 0 && prs.mentions.length === 0 && prs.created.length === 0) {
+            prText += "_暂无 PR_";
+          }
+
+          blocks.push({
+            type: "section",
+            text: { type: "mrkdwn", text: prText }
+          });
+
+          // Output
+          const payload = JSON.stringify({ blocks });
+          fs.writeFileSync('/tmp/slack_payload.json', payload);
+          console.log('Report generated successfully');
+          SCRIPT
+
+          GITHUB_RESULT_FILE=${{ steps.github.outputs.github_result_file }} node /tmp/generate_report.js
+
+      - name: Send to Slack
+        if: ${{ secrets.SLACK_BOT_TOKEN != '' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          curl -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d @- << EOF
+          {
+            "channel": "$SLACK_CHANNEL_ID",
+            "blocks": $(cat /tmp/slack_payload.json | jq '.blocks')
+          }
+          EOF
