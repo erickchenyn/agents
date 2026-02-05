@@ -5,8 +5,8 @@ description: 当用户提供回放文件 URL 要求分析时间线、诊断 Git 
 
 ## 核心功能
 
-- 使用 `moxt-cli` 的 `project:replay` 工具下载并解析回放数据（在项目根目录下执行 `pnpm exec tsx cli/src/index.ts project:replay <replay-file-url>`）
-- 使用 `moxt-cli` 的 `project:clone` 工具克隆项目仓库（在项目根目录下执行 `pnpm exec tsx cli/src/index.ts project:clone <project-id>`）
+- 使用 moxt-cli 的 project:replay 工具下载并解析回放数据（在项目根目录下执行 `pnpm exec tsx cli/src/index.ts project:replay <replay-file-url>`）
+- 使用 moxt-cli 的 project:clone 工具克隆项目仓库（在项目根目录下执行 `pnpm exec tsx cli/src/index.ts project:clone <project-id>`）
 - 结合结构化的回放数据和 Git 提交历史，提取关键信息，重建时间线，生成分析报告
 
 ## 时间线中的关键信息

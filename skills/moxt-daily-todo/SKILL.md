@@ -9,7 +9,7 @@ description: 查询每日待办事项，包括 Jira 任务、GitHub Issues 和 G
 
 ### Jira 任务查询
 
-- 确认安装了 Atlassian 插件并能使用 Atlassian MCP 工具
+- 使用 moxt-cli 的 jira 功能
 - 获取 Atlassian 账户信息
 - 使用 JQL 查询 Jira Issue，查询条件：
   - Project 为 MOXT
@@ -23,7 +23,7 @@ description: 查询每日待办事项，包括 Jira 任务、GitHub Issues 和 G
 - 分别查询以下类型的 Issue 和 PR：
   - Issues (opened, assigned to / created by / mentioning me)
   - PRs (opened, assigned to / created by / mentioning me & requesting my review)
-- 按类型分组并去重
+- 按类型分组，根据 id 去重
 
 ### 统一展示格式
 
