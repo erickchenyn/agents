@@ -30,4 +30,3 @@ assignees: erickchenyn
 * 分析问题，和我讨论清楚细节并沟通方案，先不要修改任何代码
   * 如果和客户端项目/编辑器/画布区加载、git 或数据同步性能有关，可以使用我个人的 moxt-performance skill 帮助分析
 * 将你详细的分析结果和可执行方案 comment 到 issue 中（**重要**：必须足够详细清晰，尽可能使用列表、表格、流程图等更直观的表达方式）
-* 修改代码之后，你需要用我个人的 moxt-commit skill 来提交代码并创建、跟踪 PR 以及最终 close 这个 issue
