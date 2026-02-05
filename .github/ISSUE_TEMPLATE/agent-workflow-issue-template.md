@@ -6,14 +6,6 @@ labels: ''
 assignees: erickchenyn
 ---
 
-# 我遇到的问题
-
-* 
-
----
-
-# 我大致思路或方案
-
 * 
 
 ---
