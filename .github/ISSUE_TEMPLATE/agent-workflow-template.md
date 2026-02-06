@@ -1,6 +1,10 @@
 ---
 name: AGENT 工作流 Issue 模板
+about: 为 Agent 初始化工作流创建 Issue 的模板
+title: ''
+labels: ''
 assignees: erickchenyn
+
 ---
 
 * 
