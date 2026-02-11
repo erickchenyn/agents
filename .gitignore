@@ -4,6 +4,7 @@
 !.github/**
 
 !.gitignore
+!AGENTS.md
 !CLAUDE.md
 !README.md
 
