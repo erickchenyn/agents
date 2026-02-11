@@ -1,4 +1,4 @@
-# CLAUDE
+# MOSS
 
 This repository contains Claude Code global prompts for personal use.
 
@@ -12,4 +12,4 @@ This repository contains Claude Code global prompts for personal use.
 
 ---
 
-*This document was automatically generated based on commit [`7c007a1614eec4e4c05dffff6c0242ecd859a308`](https://github.com/erickchenyn/claude/commit/7c007a1614eec4e4c05dffff6c0242ecd859a308).*
+*This document was automatically generated based on commit [`30ac5f5296b77f3e61185b9322b2ca0945cea9f3`](https://github.com/erickchenyn/moss/commit/30ac5f5296b77f3e61185b9322b2ca0945cea9f3).*
