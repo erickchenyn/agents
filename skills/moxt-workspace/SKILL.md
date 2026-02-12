@@ -5,9 +5,16 @@ description: 使用 worktree 能力切换不同 workspace 并行工作
 
 确保下列脚本代码存在于用户的 zsh 或 bash 配置中，提示用户使用 `wl wc wa wr` 切换工作区。
 
+## 查看已有工作区
+
 ```bash
 # worktree
 alias wl="git worktree list"
+```
+
+## 切换已有工作区
+
+```bash
 # worktree checkout
 wc() {
   if [ -z "$1" ]; then
@@ -26,6 +33,11 @@ wc() {
     return 1
   fi
 }
+```
+
+## 新建并切换到工作区
+
+```bash
 # worktree add
 wa() {
   local timestamp=$(date +%s)
@@ -47,6 +59,11 @@ wa() {
     return 1
   fi
 }
+```
+
+## 删除工作区并回到主工作区
+
+```bash
 # worktree remove
 wr() {
   local current_dir=$(pwd)
