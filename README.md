@@ -13,4 +13,4 @@ This repository contains Claude Code global prompts for personal use.
 
 ---
 
-*This document was automatically generated based on commit [`88eb93a44c95177bffc9dc1a34cf8bf457358ae3`](https://github.com/erickchenyn/moss/commit/88eb93a44c95177bffc9dc1a34cf8bf457358ae3).*
+*This document was automatically generated based on commit [`a0c42f1eabea4c661b42f04246a93bc7c5775e47`](https://github.com/erickchenyn/moss/commit/a0c42f1eabea4c661b42f04246a93bc7c5775e47).*
