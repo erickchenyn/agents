@@ -32,6 +32,14 @@ jobs:
               echo "- [@$f]($f)" >> AGENTS.md
             fi
           done
+
+          # Add footer with commit info
+          cat >> AGENTS.md << EOF
+
+          ---
+
+          *This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*
+          EOF
       - name: Check for changes
         id: changes
         run: |
