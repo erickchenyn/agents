@@ -1,2 +1,2 @@
-- @docs/KNOWLEDGE.md
-- @docs/RULES.md
+- [@docs/KNOWLEDGE.md](docs/KNOWLEDGE.md)
+- [@docs/RULES.md](docs/RULES.md)
