@@ -29,7 +29,7 @@ jobs:
           for f in docs/*; do
             # Only include files (not directories)
             if [ -f "$f" ]; then
-              echo "- @$f" >> AGENTS.md
+              echo "- [@$f]($f)" >> AGENTS.md
             fi
           done
       - name: Check for changes
