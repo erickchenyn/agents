@@ -1,6 +1,0 @@
-# 语言
-
-- 使用中文和我沟通
-- 使用中文写文档做记录
-- 使用中文写代码注释
-- 使用英文写 commit 和 pr title，使用中文写 commit 和 pr description
