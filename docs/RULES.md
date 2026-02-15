@@ -1,7 +1,7 @@
 # 规则说明
 
-- @rules/BUILDING.md
-- @rules/CODING.md
-- @rules/FORMAT.md
-- @rules/LANGUAGE.md
-- @rules/TESTING.md
+- @docs/rules/BUILDING.md
+- @docs/rules/CODING.md
+- @docs/rules/FORMAT.md
+- @docs/rules/LANGUAGE.md
+- @docs/rules/TESTING.md

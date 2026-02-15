@@ -1,5 +1,5 @@
 ---
-name: replay-data-analysis
+name: moxt-replay-analyse
 description: 提供回放文件 URL 要求分析时间线、诊断 Git 同步延迟问题、分析用户会话和代码生成完整流程时触发。结合回放数据和 Git 仓库历史，自动生成完整的性能分析报告。
 ---
 
