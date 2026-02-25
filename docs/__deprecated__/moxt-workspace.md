@@ -1,11 +1,9 @@
 ---
 name: moxt-workspace
 description: 使用 worktree 能力切换不同 workspace 并行工作
+deprecated: true
+reason: 改为使用 `claude --worktree` 创建工作区。可以在 `settings.json` 中通过配置 hook 自定义创建行为（如分支命名等）
 ---
-
-> **重要**：此 skill 已废弃，改为使用 `claude --worktree` 创建工作区。可以在 `settings.json` 中通过配置 hook 自定义创建行为（如分支命名等）。
-
-确保下列脚本代码存在于我的 zsh 或 bash 配置中，提示用户使用 `wl wc wa wr` 切换工作区。
 
 ## 查看已有工作区
 
