@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "skills/**"
+      - "docs/*"
       - ".github/workflows/auto-summary.yml"
 
 jobs:
@@ -71,15 +72,35 @@ jobs:
 
           *This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*
           EOF
+      - name: Generate AGENTS.md
+        run: |
+          # Generate AGENTS.md with @references to docs/ top-level files
+          > AGENTS.md
+          for f in docs/*; do
+            # Only include files (not directories)
+            if [ -f "$f" ]; then
+              echo "- [@$f]($f)" >> AGENTS.md
+            fi
+          done
+
+          # Add footer with commit info
+          cat >> AGENTS.md << EOF
+
+          ---
+
+          *This document was automatically generated based on commit [\`${{ steps.commit.outputs.sha }}\`](https://github.com/${{ github.repository }}/commit/${{ steps.commit.outputs.sha }}).*
+          EOF
       - name: Check for changes
         id: changes
         run: |
-          # Check if README.md exists and has changes, or if it's a new file
-          if [ ! -f README.md ] || ! git diff --quiet README.md || git ls-files --others --exclude-standard | grep -q "^README.md$"; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
+          changed=false
+          for file in README.md AGENTS.md; do
+            if [ ! -f "$file" ] || ! git diff --quiet "$file" || git ls-files --others --exclude-standard | grep -q "^${file}$"; then
+              changed=true
+              break
+            fi
+          done
+          echo "changed=$changed" >> $GITHUB_OUTPUT
       - name: Commit and push changes
         if: steps.changes.outputs.changed == 'true'
         env:
@@ -87,6 +108,6 @@ jobs:
         run: |
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
-          git add README.md
-          git commit -m "docs(README): auto summary (${{ steps.commit.outputs.sha }})"
+          git add README.md AGENTS.md
+          git commit -m "docs: auto summary (${{ steps.commit.outputs.sha }})"
           git push
