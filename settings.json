@@ -1,0 +1,16 @@
+{
+  "model": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+  "skipDangerousModePermissionPrompt": true,
+  "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'NAME=$(jq -r .name <<< \"$(cat)\"); CWD=$(git rev-parse --show-toplevel); DIR=\"$CWD/.claude/worktrees/$NAME\"; git worktree add -b \"chenyn/$NAME\" \"$DIR\" HEAD >&2 && echo \"$DIR\"'"
+          }
+        ]
+      }
+    ]
+  }
+}
