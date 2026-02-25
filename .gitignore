@@ -4,6 +4,8 @@
 !.github/**
 
 !.gitignore
+!settings.json
+
 !AGENTS.md
 !CLAUDE.md
 !README.md
