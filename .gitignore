@@ -1,14 +1,19 @@
 *
 
-!.github
-!.github/**
-
 !.gitignore
 !settings.json
+!.mailmap
+
+!.claude/
+!.claude/config
+!.claude/config/commit.config.json
 
 !AGENTS.md
 !CLAUDE.md
 !README.md
+
+!.github
+!.github/**
 
 !skills
 !skills/**
