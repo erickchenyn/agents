@@ -1,5 +1,9 @@
 # 通用规则
 
+## 提交
+
+**重要**：使用 [/moxt-commit](skills/moxt-commit/SKILL.md) skill 提交代码
+
 ## 构建
 
 - 修改非 web 目录下的文件后，如 feature-switch，可以使用 `q generate --cahce=false` 命令来重新生成必要的 ts 代码
