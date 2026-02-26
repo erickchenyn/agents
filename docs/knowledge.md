@@ -6,5 +6,6 @@
 
 - **workspace 模式**：
   - 开启 `paraflow-workspace` feature switch 且项目名以 `.ws` 结尾时，会进入的新模式
-  - 模式识别入口位于 `3-after-document-loaded` 文件
-  - 模式的 UI 组件位于 `design/workspace-view` 目录中
+  - 识别入口位于 `3-after-document-loaded` 文件
+  - UI 组件主要位于 `views/design/workspace-view` 目录中
+  - Signal 主要位于 `signals/editor-v2/workspace` 目录中
