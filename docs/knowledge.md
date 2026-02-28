@@ -9,3 +9,8 @@
   - 识别入口位于 `3-after-document-loaded` 文件
   - UI 组件主要位于 `views/design/workspace-view` 目录中
   - Signal 主要位于 `signals/editor-v2/workspace` 目录中
+- **project bootstrap 初始化加载流程和 git 数据同步流程**：
+  - 入口位于 `signals/editor-v2/lifecycle/project-page/1-setup-project-page.ts`
+  - 初始化 git 数据存储的入口位于 `signals/editor-v2/git-storage/setup-git-storage.ts`
+  - git 数据同步的核心代码位于 `signals/editor-v2/synergy/` 目录中
+  - 流程中插入了一些本地 debug log、record log 和 datadog metric log
