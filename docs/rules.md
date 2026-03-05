@@ -2,11 +2,11 @@
 
 ## 提交
 
-**重要**：使用 [/moxt-commit](skills/moxt-commit/SKILL.md) skill 提交代码
+- 使用 [/moxt-commit](/skills/moxt-commit/SKILL.md) skill 提交代码
 
 ## 构建
 
-- 修改非 web 目录下的文件后，如 feature-switch，可以使用 `q generate --cahce=false` 命令来重新生成必要的 ts 代码
+- 如果发现如 node_modules 目录或 feature switch 等文件不存在，可以使用 `q generate --cahce=false` 命令来重新生成必要的代码
 
 ## 编码
 
