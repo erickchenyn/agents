@@ -2,7 +2,7 @@
 
 ## 提交
 
-**重要**：使用 [/moxt-commit](/skills/moxt-commit/SKILL.md) skill 提交代码
+- 使用 [/moxt-commit](/skills/moxt-commit/SKILL.md) skill 提交代码
 
 ## 构建
 
