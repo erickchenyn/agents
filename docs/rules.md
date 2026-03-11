@@ -6,7 +6,7 @@
 
 ## 构建
 
-- 如果发现如 node_modules 目录或 feature switch 等文件不存在，可以使用 `q generate --cahce=false` 命令来重新生成必要的代码
+- 缺少生成文件时，可以使用 `q generate --cahce=false` 命令来重新生成必要的 ts 代码
 
 ## 编码
 
