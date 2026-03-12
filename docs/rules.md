@@ -6,7 +6,7 @@
 
 ## 构建
 
-- 缺少生成文件时，可以使用 `q generate --cahce=false` 命令来重新生成必要的 ts 代码
+- 缺少依赖或生成文件时，可以使用 `q generate --cahce=false` 命令来安装依赖并重新生成必要的代码
 
 ## 编码
 
