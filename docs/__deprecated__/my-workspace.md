@@ -1,5 +1,5 @@
 ---
-name: moxt-workspace
+name: my-workspace
 description: 使用 worktree 能力切换不同 workspace 并行工作
 deprecated: true
 reason: 改为使用 `claude --worktree` 创建工作区。可以在 `settings.json` 中通过配置 hook 自定义创建行为（如分支命名等）

@@ -1,9 +1,9 @@
 ---
-name: x-article-to-markdown
+name: markdown-article-for-x
 description: Use when user provides an X (Twitter) Article URL to convert into a local markdown file.
 ---
 
-Convert an X Article page into a well-formatted markdown file. Inherits all rules from [@article-to-markdown](../article-to-markdown/SKILL.md), with the following X-specific additions and overrides.
+Convert an X Article page into a well-formatted markdown file. Inherits all rules from [@markdown-article](../markdown-article/SKILL.md), with the following X-specific additions and overrides.
 
 ## Important: Playwright MCP required
 

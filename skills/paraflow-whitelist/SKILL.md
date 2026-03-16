@@ -1,5 +1,5 @@
 ---
-name: moxt-paraflow-whitelist
+name: paraflow-whitelist
 description: 给外部用户开 moxt 新版本白名单，将邮箱追加到功能开关配置中
 ---
 
