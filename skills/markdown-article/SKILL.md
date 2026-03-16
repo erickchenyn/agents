@@ -50,6 +50,14 @@ If the article is in a non-Chinese language (English, Japanese, etc.), save an a
 - Filename is the original filename with a `-cn` suffix, e.g. `x-2018385296610746403-cn.md` or `ai-coding-2025-cn.md`
 - Saved in the same date directory as the original
 
+## Long articles
+
+When an article is very long (e.g. full podcast transcripts, lengthy interviews), writing the entire file at once can time out or stall. In such cases:
+
+1. First create the `.md` file with only the front matter (title, metadata, `---` separator) and an empty body
+2. Then append content **section by section** (one heading + its paragraphs per edit) using the Edit tool
+3. Never attempt to write the full article body in a single Write or Edit operation
+
 ## Stop condition
 
 The task is done when the markdown file (and translation if applicable) is written and its path is reported to the user.
