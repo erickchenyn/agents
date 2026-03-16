@@ -2,6 +2,9 @@
 
 - **2026-03-16**
   - [万字长文：2025 年，我对 AI 编程的全部理解——Part 1](articles/2026-03-16/ai-coding-2025.md)
+  - [解析 OpenClaw 26.3.8 大更新及 mem9 如何利用新 ContextEngine 接口实现全周期记忆管理](articles/2026-03-16/wx-4v1hRcNyuYMRcFHCr-2S4Q.md)
+  - ["Claude Code 这条路线错了"！元老级 AI 大师 Jeremy Howard 开炮：马斯克和 Dario 根本不懂现代软件工程](articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md)
+  - [燃尽、重启、爆火：Clawdbot 创始人的 35 分钟访谈实录](articles/2026-03-16/x-2016614384886526221.md)
   - [新的设计流程](articles/2026-03-16/x-2018385296610746403-cn.md)
   - [The new design process](articles/2026-03-16/x-2018385296610746403.md)
 - **2026-03-14**
@@ -11,4 +14,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`bff88253975b9ac2bd136a3f8e91bce1c36fd628`](https://github.com/erickchenyn/claude/commit/bff88253975b9ac2bd136a3f8e91bce1c36fd628).*
+*This document was automatically generated based on commit [`4acb52083d94b0f719b5bee7ac78c0595f8e2c37`](https://github.com/erickchenyn/claude/commit/4acb52083d94b0f719b5bee7ac78c0595f8e2c37).*
