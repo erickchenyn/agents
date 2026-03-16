@@ -4,11 +4,11 @@ This repository contains Claude Code global prompts for personal use.
 
 | Skill | Description |
 |-------|-------------|
-| [article-to-markdown](skills/article-to-markdown/SKILL.md) | Use when user provides a web article URL to convert into a local markdown file. |
+| [markdown-article-for-x](skills/markdown-article-for-x/SKILL.md) | Use when user provides an X (Twitter) Article URL to convert into a local markdown file. |
+| [markdown-article](skills/markdown-article/SKILL.md) | Use when user provides a web article URL to convert into a local markdown file. |
 | [moxt-commit](skills/moxt-commit/SKILL.md) | 提交代码、跟踪 PR 状态、完成代码合并 |
-| [moxt-paraflow-whitelist](skills/moxt-paraflow-whitelist/SKILL.md) | 给外部用户开 moxt 新版本白名单，将邮箱追加到功能开关配置中 |
-| [x-article-to-markdown](skills/x-article-to-markdown/SKILL.md) | Use when user provides an X (Twitter) Article URL to convert into a local markdown file. |
+| [paraflow-whitelist](skills/paraflow-whitelist/SKILL.md) | 给外部用户开 moxt 新版本白名单，将邮箱追加到功能开关配置中 |
 
 ---
 
-*This document was automatically generated based on commit [`9b218427fd781a6daa82eaf021fce65b15ab2e24`](https://github.com/erickchenyn/claude/commit/9b218427fd781a6daa82eaf021fce65b15ab2e24).*
+*This document was automatically generated based on commit [`4d4c22c669f7609f1a4d412d9ad574597bd9a9b3`](https://github.com/erickchenyn/claude/commit/4d4c22c669f7609f1a4d412d9ad574597bd9a9b3).*
