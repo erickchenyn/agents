@@ -65,4 +65,5 @@ jobs:
           git config --local user.name "Claude"
           git add ARTICLES.md
           git commit -m "docs: article summary (${{ steps.commit.outputs.sha }})"
+          git pull --rebase
           git push
