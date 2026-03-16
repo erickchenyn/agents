@@ -42,7 +42,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
     - [ ] 等待 PR 被成功合并，确认 feature 分支在远程已被删除
     - [ ] 如 PR 有关联的 Issue，关闭 Issue
 
-# 相关工具说明
+## 相关说明
 
 - 你可以在 git 仓库下使用 gh cli 来操作 Git
 - 你需要确保 git user 信息有效，邮箱必须是 `erick.chen@paraflow.com`
