@@ -1,5 +1,5 @@
 ---
-name: moxt-performance
+name: paraflow-performance
 description: 分析 project/canvas 页面加载及 git synergy 同步性能埋点与监控，提供优化建议
 ---
 

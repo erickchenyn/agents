@@ -1,4 +1,4 @@
-name: skill-summary
+name: agent-summary
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     paths:
       - "skills/**"
       - "docs/*"
-      - ".github/workflows/skill-summary.yml"
+      - ".github/workflows/agent-summary.yml"
 
 jobs:
-  skill-summary:
+  agent-summary:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -109,6 +109,6 @@ jobs:
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
           git add README.md AGENTS.md
-          git commit -m "docs(skills): auto summary (${{ steps.commit.outputs.sha }})"
+          git commit -m "docs(agents): auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
           git push

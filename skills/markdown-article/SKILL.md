@@ -1,5 +1,5 @@
 ---
-name: article-to-markdown
+name: markdown-article
 description: Use when user provides a web article URL to convert into a local markdown file.
 ---
 
@@ -15,7 +15,7 @@ A valid article URL, e.g. `https://example.com/blog/some-article`
 2. Extract the article body from `<article>`, `<main>`, or the most relevant content container
 3. Convert the extracted HTML into well-formatted markdown:
    - Identify section headings and set proper `##` / `###` levels
-   - Wrap code snippets in fenced code blocks with language hints (```bash, ```json, ```yaml, etc.)
+   - Wrap code snippets in fenced code blocks with language hints (`bash, `json, ```yaml, etc.)
    - Format lists, blockquotes, tables, bold/italic correctly
    - Preserve images at their original positions using `![caption](url)` syntax
    - Remove UI noise (navigation, sidebar, footer, ads, share buttons, comment sections, etc.)

@@ -1,5 +1,5 @@
 ---
-name: moxt-jira-todo
+name: my-jira-todo
 description: 查询每日待办事项，包括 Jira 任务，统一展示所有需要关注的工作
 ---
 
