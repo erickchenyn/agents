@@ -7,6 +7,8 @@
   - [燃尽、重启、爆火：Clawdbot 创始人的 35 分钟访谈实录](articles/2026-03-16/x-2016614384886526221.md)
   - [新的设计流程](articles/2026-03-16/x-2018385296610746403-cn.md)
   - [The new design process](articles/2026-03-16/x-2018385296610746403.md)
+  - [规格即代码：Spec Driven Development 实践指南](articles/2026-03-16/x-2033303156340240481-cn.md)
+  - [The Spec Is the New Code: A Guide to Spec Driven Development](articles/2026-03-16/x-2033303156340240481.md)
 - **2026-03-14**
   - [我们如何构建安全、可扩展的 Agent 沙箱基础设施](articles/2026-03-14/x-2027225210412470668-cn.md)
   - [How We Built Secure, Scalable Agent Sandbox Infrastructure](articles/2026-03-14/x-2027225210412470668.md)
@@ -14,4 +16,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`4acb52083d94b0f719b5bee7ac78c0595f8e2c37`](https://github.com/erickchenyn/claude/commit/4acb52083d94b0f719b5bee7ac78c0595f8e2c37).*
+*This document was automatically generated based on commit [`39cc1d459052037d40c7324e8f9e2450fea749da`](https://github.com/erickchenyn/claude/commit/39cc1d459052037d40c7324e8f9e2450fea749da).*
