@@ -22,5 +22,8 @@
       }
     ]
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "enabledPlugins": {
+    "playwright@claude-plugins-official": true
+  }
 }
