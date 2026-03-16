@@ -4,6 +4,7 @@ This repository contains Claude Code global prompts for personal use.
 
 | Skill | Description |
 |-------|-------------|
+| [markdown-article-for-wx](skills/markdown-article-for-wx/SKILL.md) | Use when user provides a WeChat Official Account (微信公众号) article URL to convert into a local markdown file. |
 | [markdown-article-for-x](skills/markdown-article-for-x/SKILL.md) | Use when user provides an X (Twitter) Article URL to convert into a local markdown file. |
 | [markdown-article](skills/markdown-article/SKILL.md) | Use when user provides a web article URL to convert into a local markdown file. |
 | [moxt-commit](skills/moxt-commit/SKILL.md) | 提交代码、跟踪 PR 状态、完成代码合并 |
@@ -11,4 +12,4 @@ This repository contains Claude Code global prompts for personal use.
 
 ---
 
-*This document was automatically generated based on commit [`4d4c22c669f7609f1a4d412d9ad574597bd9a9b3`](https://github.com/erickchenyn/claude/commit/4d4c22c669f7609f1a4d412d9ad574597bd9a9b3).*
+*This document was automatically generated based on commit [`4acb52083d94b0f719b5bee7ac78c0595f8e2c37`](https://github.com/erickchenyn/claude/commit/4acb52083d94b0f719b5bee7ac78c0595f8e2c37).*
