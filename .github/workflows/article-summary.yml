@@ -64,6 +64,6 @@ jobs:
           git config --local user.email "noreply@anthropic.com"
           git config --local user.name "Claude"
           git add ARTICLES.md
-          git commit -m "docs: article summary (${{ steps.commit.outputs.sha }})"
+          git commit -m "docs(articles): auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
           git push
