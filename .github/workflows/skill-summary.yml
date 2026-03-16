@@ -1,4 +1,4 @@
-name: auto-summary
+name: skill-summary
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     paths:
       - "skills/**"
       - "docs/*"
-      - ".github/workflows/auto-summary.yml"
+      - ".github/workflows/skill-summary.yml"
 
 jobs:
-  auto-summary:
+  skill-summary:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,7 +27,7 @@ jobs:
         run: |
           # Create README.md header
           cat > README.md << 'EOF'
-          # MOSS
+          # Claude
 
           This repository contains Claude Code global prompts for personal use.
 
