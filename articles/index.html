@@ -229,6 +229,7 @@
   .markdown-body {
     font-size: 15px;
     line-height: 1.7;
+    background: transparent;
   }
 
   .markdown-body img {
@@ -452,6 +453,12 @@ async function handleClick(itemEl) {
   document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
   itemEl.classList.add('active');
 
+  // Update URL query param
+  const filePath = itemEl.dataset.bilingual === 'true' ? itemEl.dataset.cn : itemEl.dataset.file;
+  const url = new URL(window.location);
+  url.searchParams.set('file', filePath);
+  history.pushState({ file: filePath }, '', url);
+
   contentHeader.style.display = '';
 
   if (itemEl.dataset.bilingual === 'true') {
@@ -519,6 +526,45 @@ async function loadBilingual(cnPath, enPath) {
 }
 
 buildTree();
+
+// Open file from URL query param
+function openFileFromParam(filePath) {
+  if (!filePath) return;
+  const target = document.querySelector(`.file-item[data-cn="${CSS.escape(filePath)}"]`)
+    || document.querySelector(`.file-item[data-file="${CSS.escape(filePath)}"]`);
+  if (!target) return;
+  // Ensure parent folder is expanded
+  const fileList = target.closest('.file-list');
+  if (fileList && !fileList.classList.contains('open')) {
+    fileList.classList.add('open');
+    const arrow = fileList.previousElementSibling.querySelector('.arrow');
+    if (arrow) arrow.classList.add('open');
+  }
+  // Activate without pushing state again
+  document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
+  target.classList.add('active');
+  contentHeader.style.display = '';
+  if (target.dataset.bilingual === 'true') {
+    loadBilingual(target.dataset.cn, target.dataset.en);
+  } else {
+    loadSingle(target.dataset.file);
+  }
+}
+
+openFileFromParam(new URLSearchParams(window.location.search).get('file'));
+
+window.addEventListener('popstate', () => {
+  const filePath = new URLSearchParams(window.location.search).get('file');
+  if (filePath) {
+    openFileFromParam(filePath);
+  } else {
+    // No file param - show placeholder
+    document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
+    contentHeader.style.display = 'none';
+    contentBody.className = 'content-body';
+    contentBody.innerHTML = '<div class="placeholder">Select an article from the sidebar</div>';
+  }
+});
 
 // Sidebar resize handle
 const sidebar = document.getElementById('sidebar');
