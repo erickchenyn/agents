@@ -239,6 +239,100 @@
     flex: 1;
   }
 
+  /* Notes highlight */
+  mark.note-highlight {
+    background: #fff8c5;
+    border-bottom: 2px solid #d4a72c;
+    padding: 0 1px;
+    border-radius: 2px;
+    cursor: default;
+    position: relative;
+  }
+
+  mark.note-highlight.has-note {
+    cursor: pointer;
+  }
+
+  /* Note tooltip */
+  .note-tooltip {
+    position: fixed;
+    max-width: 320px;
+    padding: 8px 12px;
+    background: #1f2328;
+    color: #f0f0f0;
+    font-size: 13px;
+    line-height: 1.5;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 100;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Note input popover */
+  .note-input-popover {
+    position: fixed;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #d1d9e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    padding: 6px;
+  }
+
+  .note-input-popover input {
+    width: 280px;
+    padding: 6px 10px;
+    border: 1px solid #d1d9e0;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+    color: #1f2328;
+  }
+
+  .note-input-popover input:focus {
+    border-color: #0969da;
+    box-shadow: 0 0 0 2px rgba(9,105,218,0.15);
+  }
+
+  .note-input-popover input::placeholder {
+    color: #afb8c1;
+  }
+
+  .note-input-popover button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .note-input-popover .btn-save {
+    background: #1f2328;
+    color: #ffffff;
+  }
+
+  .note-input-popover .btn-save:hover {
+    background: #32383f;
+  }
+
+  .note-input-popover .btn-highlight {
+    background: #fff8c5;
+    color: #6a5300;
+    border: 1px solid #d4a72c;
+  }
+
+  .note-input-popover .btn-highlight:hover {
+    background: #ffef99;
+  }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -473,6 +567,7 @@ async function loadSingle(path) {
   const html = marked.parse(md);
   contentBody.className = 'content-body single';
   contentBody.innerHTML = `<article class="markdown-body">${html}</article>`;
+  await applyNotes(path, contentBody.querySelector('.markdown-body'));
 }
 
 async function loadBilingual(cnPath, enPath) {
@@ -500,6 +595,9 @@ async function loadBilingual(cnPath, enPath) {
       <article class="markdown-body">${enHtml}</article>
     </div>
   `;
+
+  await applyNotes(cnPath, contentBody.querySelector('.dual-pane:first-child .markdown-body'));
+  await applyNotes(enPath, contentBody.querySelector('.dual-pane:last-child .markdown-body'));
 
   // Sync scroll between panes
   const panes = contentBody.querySelectorAll('.dual-pane');
@@ -556,6 +654,274 @@ window.addEventListener('popstate', () => {
     contentBody.innerHTML = '<div class="placeholder">Select an article from the sidebar</div>';
   }
 });
+
+// ==================== Notes system ====================
+
+// Cache for notes per file
+const notesCache = {};
+
+async function fetchNotes(filePath) {
+  const notesPath = filePath.replace('.md', '.notes.json');
+  try {
+    const res = await fetch(notesPath);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (e) {
+    return [];
+  }
+}
+
+async function saveNotes(filePath, notes) {
+  notesCache[filePath] = notes;
+  await fetch('/api/notes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ file: filePath, notes })
+  });
+}
+
+// Walk all text nodes in an element, in document order
+function getTextNodes(el) {
+  const nodes = [];
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) nodes.push(node);
+  return nodes;
+}
+
+// Find text node and local offset for a given global char offset
+function findPositionAtOffset(textNodes, globalOffset) {
+  let cumulative = 0;
+  for (const node of textNodes) {
+    const len = node.textContent.length;
+    if (cumulative + len > globalOffset) {
+      return { node, offset: globalOffset - cumulative };
+    }
+    cumulative += len;
+  }
+  // Clamp to end
+  const lastNode = textNodes[textNodes.length - 1];
+  return { node: lastNode, offset: lastNode.textContent.length };
+}
+
+// Compute global char offset of a position within the markdown-body
+function getGlobalOffset(container, targetNode, targetOffset) {
+  const textNodes = getTextNodes(container);
+  let cumulative = 0;
+  for (const node of textNodes) {
+    if (node === targetNode) return cumulative + targetOffset;
+    cumulative += node.textContent.length;
+  }
+  return cumulative;
+}
+
+// Wrap a range spanning across text nodes with <mark> tags
+function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
+  const textNodes = getTextNodes(container);
+  let cumulative = 0;
+  const marks = [];
+
+  for (const node of textNodes) {
+    const nodeStart = cumulative;
+    const nodeEnd = cumulative + node.textContent.length;
+    cumulative = nodeEnd;
+
+    // Check overlap
+    const overlapStart = Math.max(startOffset, nodeStart);
+    const overlapEnd = Math.min(endOffset, nodeEnd);
+    if (overlapStart >= overlapEnd) continue;
+
+    const localStart = overlapStart - nodeStart;
+    const localEnd = overlapEnd - nodeStart;
+
+    const range = document.createRange();
+    range.setStart(node, localStart);
+    range.setEnd(node, localEnd);
+
+    const mark = document.createElement('mark');
+    mark.className = 'note-highlight' + (hasNote ? ' has-note' : '');
+    mark.dataset.noteId = noteId;
+    range.surroundContents(mark);
+    marks.push(mark);
+  }
+
+  return marks;
+}
+
+// Apply all notes to a rendered markdown container
+async function applyNotes(filePath, container) {
+  if (!container) return;
+  const notes = await fetchNotes(filePath);
+  notesCache[filePath] = notes;
+  container.dataset.filePath = filePath;
+
+  // Sort notes by startOffset ascending to apply them in order
+  const sorted = [...notes].sort((a, b) => a.startOffset - b.startOffset);
+
+  // Apply highlights (apply in reverse so offsets stay valid)
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    const note = sorted[i];
+    highlightRange(container, note.startOffset, note.endOffset, note.id, !!note.note);
+  }
+}
+
+// ---- Note input popover ----
+let activePopover = null;
+
+function removePopover() {
+  if (activePopover) {
+    activePopover.remove();
+    activePopover = null;
+  }
+}
+
+function showNoteInput(x, y, callback) {
+  removePopover();
+
+  const popover = document.createElement('div');
+  popover.className = 'note-input-popover';
+  popover.innerHTML = `
+    <input type="text" placeholder="Write a note... (Enter to save, empty to just highlight)">
+    <button class="btn-save">Save</button>
+    <button class="btn-highlight">Highlight only</button>
+  `;
+
+  document.body.appendChild(popover);
+  activePopover = popover;
+
+  // Position: try to show below the selection, adjust if out of viewport
+  const rect = popover.getBoundingClientRect();
+  let left = x - rect.width / 2;
+  let top = y + 8;
+  if (left < 8) left = 8;
+  if (left + rect.width > window.innerWidth - 8) left = window.innerWidth - 8 - rect.width;
+  if (top + rect.height > window.innerHeight - 8) top = y - rect.height - 8;
+  popover.style.left = left + 'px';
+  popover.style.top = top + 'px';
+
+  const input = popover.querySelector('input');
+  input.focus();
+
+  const save = (note) => {
+    removePopover();
+    callback(note);
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      save(input.value);
+    } else if (e.key === 'Escape') {
+      removePopover();
+    }
+  });
+
+  popover.querySelector('.btn-save').addEventListener('click', () => save(input.value));
+  popover.querySelector('.btn-highlight').addEventListener('click', () => save(''));
+}
+
+// ---- Selection handler ----
+document.addEventListener('mouseup', (e) => {
+  // Ignore if clicking on the popover itself
+  if (activePopover && activePopover.contains(e.target)) return;
+
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+
+  const range = sel.getRangeAt(0);
+  const container = range.commonAncestorContainer.nodeType === 1
+    ? range.commonAncestorContainer.closest('.markdown-body')
+    : range.commonAncestorContainer.parentElement?.closest('.markdown-body');
+  if (!container || !container.dataset.filePath) return;
+
+  const selectedText = sel.toString().trim();
+  if (!selectedText) return;
+
+  const filePath = container.dataset.filePath;
+  const startOffset = getGlobalOffset(container, range.startContainer, range.startOffset);
+  const endOffset = getGlobalOffset(container, range.endContainer, range.endOffset);
+
+  // Show popover near the end of selection
+  const rects = range.getClientRects();
+  const lastRect = rects[rects.length - 1];
+  const px = lastRect.right;
+  const py = lastRect.bottom;
+
+  showNoteInput(px, py, async (noteText) => {
+    sel.removeAllRanges();
+
+    const notes = notesCache[filePath] || [];
+    const newNote = {
+      id: Date.now(),
+      startOffset,
+      endOffset,
+      text: selectedText,
+      note: noteText
+    };
+    notes.push(newNote);
+    await saveNotes(filePath, notes);
+
+    // Re-highlight: re-render the article
+    reloadCurrentArticle();
+  });
+});
+
+// Close popover when clicking outside
+document.addEventListener('mousedown', (e) => {
+  if (activePopover && !activePopover.contains(e.target)) {
+    removePopover();
+  }
+});
+
+// ---- Tooltip on hover ----
+let tooltip = null;
+
+function removeTooltip() {
+  if (tooltip) {
+    tooltip.remove();
+    tooltip = null;
+  }
+}
+
+document.addEventListener('mouseover', (e) => {
+  const mark = e.target.closest('mark.note-highlight.has-note');
+  if (!mark) return;
+
+  const noteId = Number(mark.dataset.noteId);
+  const container = mark.closest('.markdown-body');
+  if (!container) return;
+
+  const filePath = container.dataset.filePath;
+  const notes = notesCache[filePath] || [];
+  const note = notes.find(n => n.id === noteId);
+  if (!note || !note.note) return;
+
+  removeTooltip();
+  tooltip = document.createElement('div');
+  tooltip.className = 'note-tooltip';
+  tooltip.textContent = note.note;
+  document.body.appendChild(tooltip);
+
+  const rect = mark.getBoundingClientRect();
+  const ttRect = tooltip.getBoundingClientRect();
+  let left = rect.left + rect.width / 2 - ttRect.width / 2;
+  let top = rect.top - ttRect.height - 6;
+  if (left < 8) left = 8;
+  if (top < 8) top = rect.bottom + 6;
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+});
+
+document.addEventListener('mouseout', (e) => {
+  const mark = e.target.closest('mark.note-highlight.has-note');
+  if (mark) removeTooltip();
+});
+
+// ---- Reload current article to re-apply highlights ----
+function reloadCurrentArticle() {
+  const filePath = new URLSearchParams(window.location.search).get('file');
+  if (filePath) openFileFromParam(filePath);
+}
 
 // Sidebar resize handle
 const sidebar = document.getElementById('sidebar');
