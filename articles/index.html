@@ -469,7 +469,7 @@ async function handleClick(itemEl) {
 }
 
 async function loadSingle(path) {
-  contentHeader.textContent = path;
+  contentHeader.textContent = path.replace('/', ' / ');
 
   let md;
   try {
