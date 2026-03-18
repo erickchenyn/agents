@@ -38,7 +38,7 @@ A single `.md` file with the following structure:
 The file MUST be saved to `~/.claude/articles/<date>/<slug>.md` (i.e. under the global `.claude` directory, NOT the project directory):
 
 - `<date>`: the date when this skill is executed, formatted as `YYYY-MM-DD` (e.g. `2026-03-14`)
-- `<slug>`: derived from the URL path, typically the last meaningful segment (e.g. for `https://example.com/blog/ai-coding-2025` the slug is `ai-coding-2025`)
+- `<slug>`: a Unix timestamp in milliseconds at the time of execution (e.g. `1742280000000`)
 
 Create the date directory if it does not exist.
 
