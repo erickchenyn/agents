@@ -245,12 +245,8 @@
     border-bottom: 2px solid #d4a72c;
     padding: 0 1px;
     border-radius: 2px;
-    cursor: default;
-    position: relative;
-  }
-
-  mark.note-highlight.has-note {
     cursor: pointer;
+    position: relative;
   }
 
   /* Note tooltip */
@@ -331,6 +327,17 @@
 
   .note-input-popover .btn-highlight:hover {
     background: #ffef99;
+  }
+
+  .note-input-popover .btn-delete {
+    background: #fff;
+    color: #cf222e;
+    border: 1px solid #cf222e;
+  }
+
+  .note-input-popover .btn-delete:hover {
+    background: #cf222e;
+    color: #fff;
   }
 
   /* Scrollbar */
@@ -663,7 +670,7 @@ const notesCache = {};
 async function fetchNotes(filePath) {
   const notesPath = filePath.replace('.md', '.notes.json');
   try {
-    const res = await fetch(notesPath);
+    const res = await fetch(notesPath + '?t=' + Date.now());
     if (!res.ok) return [];
     return await res.json();
   } catch (e) {
@@ -820,10 +827,91 @@ function showNoteInput(x, y, callback) {
   popover.querySelector('.btn-highlight').addEventListener('click', () => save(''));
 }
 
+// ---- Click on existing highlight to edit/delete ----
+document.addEventListener('click', (e) => {
+  if (activePopover) return;
+
+  const mark = e.target.closest('mark.note-highlight');
+  if (!mark) return;
+
+  const noteId = Number(mark.dataset.noteId);
+  const container = mark.closest('.markdown-body');
+  if (!container) return;
+
+  const filePath = container.dataset.filePath;
+  const notes = notesCache[filePath] || [];
+  const note = notes.find(n => n.id === noteId);
+  if (!note) return;
+
+  // Clear text selection to avoid triggering the mouseup handler
+  window.getSelection().removeAllRanges();
+
+  removeTooltip();
+
+  const rect = mark.getBoundingClientRect();
+  const px = rect.left + rect.width / 2;
+  const py = rect.bottom;
+
+  removePopover();
+
+  const popover = document.createElement('div');
+  popover.className = 'note-input-popover';
+  popover.innerHTML = `
+    <input type="text" placeholder="Write a note... (Enter to save, empty to just highlight)">
+    <button class="btn-save">Save</button>
+    <button class="btn-delete">Delete</button>
+  `;
+
+  document.body.appendChild(popover);
+  activePopover = popover;
+
+  const popRect = popover.getBoundingClientRect();
+  let left = px - popRect.width / 2;
+  let top = py + 8;
+  if (left < 8) left = 8;
+  if (left + popRect.width > window.innerWidth - 8) left = window.innerWidth - 8 - popRect.width;
+  if (top + popRect.height > window.innerHeight - 8) top = rect.top - popRect.height - 8;
+  popover.style.left = left + 'px';
+  popover.style.top = top + 'px';
+
+  const input = popover.querySelector('input');
+  input.value = note.note || '';
+  input.focus();
+
+  const saveEdit = async (newNote) => {
+    removePopover();
+    note.note = newNote;
+    await saveNotes(filePath, notes);
+    reloadCurrentArticle();
+  };
+
+  const deleteNote = async () => {
+    removePopover();
+    const idx = notes.findIndex(n => n.id === noteId);
+    if (idx !== -1) notes.splice(idx, 1);
+    await saveNotes(filePath, notes);
+    reloadCurrentArticle();
+  };
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveEdit(input.value);
+    } else if (e.key === 'Escape') {
+      removePopover();
+    }
+  });
+
+  popover.querySelector('.btn-save').addEventListener('click', () => saveEdit(input.value));
+  popover.querySelector('.btn-delete').addEventListener('click', () => deleteNote());
+});
+
 // ---- Selection handler ----
 document.addEventListener('mouseup', (e) => {
   // Ignore if clicking on the popover itself
   if (activePopover && activePopover.contains(e.target)) return;
+  // Ignore if clicking on an existing highlight (handled by click handler)
+  if (e.target.closest('mark.note-highlight')) return;
 
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
