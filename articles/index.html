@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Articles Reader</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    background: #f6f8fa;
+    color: #1f2328;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 280px;
+    min-width: 180px;
+    max-width: 50vw;
+    height: 100vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border-right: 1px solid #d1d9e0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .resize-handle {
+    width: 4px;
+    cursor: col-resize;
+    background: transparent;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .resize-handle:hover,
+  .resize-handle.active {
+    background: #0969da;
+  }
+
+  .sidebar-header {
+    padding: 16px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid #d1d9e0;
+    color: #1f2328;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 1;
+  }
+
+  .tree {
+    padding: 8px 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .folder {
+    user-select: none;
+  }
+
+  .folder-header {
+    display: flex;
+    align-items: center;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2328;
+    gap: 6px;
+    transition: background 0.15s;
+  }
+
+  .folder-header:hover {
+    background: #f6f8fa;
+  }
+
+  .folder-header .arrow {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+    font-size: 12px;
+    color: #656d76;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .folder-header .arrow.open {
+    transform: rotate(90deg);
+  }
+
+  .folder-header .folder-icon {
+    flex-shrink: 0;
+    color: #54aeff;
+  }
+
+  .file-list {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+  }
+
+  .file-list.open {
+    max-height: 2000px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    padding: 5px 16px 5px 38px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #656d76;
+    gap: 6px;
+    transition: background 0.15s, color 0.15s;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .file-item:hover {
+    background: #f6f8fa;
+    color: #1f2328;
+  }
+
+  .file-item.active {
+    background: #ddf4ff;
+    color: #0969da;
+    font-weight: 500;
+  }
+
+  .file-item .file-icon {
+    flex-shrink: 0;
+    color: #656d76;
+  }
+
+  .file-item .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .file-item .bilingual-badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: #ddf4ff;
+    color: #0969da;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
+  /* Content */
+  .content {
+    flex: 1;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content-header {
+    padding: 12px 24px;
+    font-size: 13px;
+    color: #656d76;
+    border-bottom: 1px solid #d1d9e0;
+    background: #ffffff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .content-body {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 32px 24px;
+    overflow-y: auto;
+  }
+
+  /* Single column */
+  .content-body.single .markdown-body {
+    max-width: 860px;
+    width: 100%;
+  }
+
+  /* Dual column */
+  .content-body.dual {
+    padding: 0;
+    gap: 0;
+    justify-content: stretch;
+  }
+
+  .dual-pane {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px 24px;
+    min-width: 0;
+  }
+
+  .dual-pane:first-child {
+    border-right: 1px solid #d1d9e0;
+  }
+
+  .dual-pane .pane-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #656d76;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8ecf0;
+  }
+
+  .dual-pane .markdown-body {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .markdown-body {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .markdown-body img {
+    max-width: 100%;
+    border-radius: 6px;
+  }
+
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #656d76;
+    font-size: 15px;
+    flex: 1;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #d1d9e0; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #afb8c1; }
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">Articles</div>
+  <div class="tree" id="tree"></div>
+</div>
+
+<div class="resize-handle" id="resize-handle"></div>
+
+<div class="content">
+  <div class="content-header" id="content-header" style="display:none;"></div>
+  <div class="content-body" id="content-body">
+    <div class="placeholder">Select an article from the sidebar</div>
+  </div>
+</div>
+
+<script>
+// File tree data - generated from articles directory
+const articles = {
+  "2026-03-16": [
+    "ai-coding-2025.md",
+    "wx-4v1hRcNyuYMRcFHCr-2S4Q.md",
+    "wx-7FcavO7t_2zBhVZEWlfaxg.md",
+    "x-2016614384886526221.md",
+    "x-2018385296610746403.md",
+    "x-2018385296610746403-cn.md",
+    "x-2033303156340240481.md",
+    "x-2033303156340240481-cn.md"
+  ],
+  "2026-03-14": [
+    "x-2027225210412470668.md",
+    "x-2027225210412470668-cn.md",
+    "x-2032091246588518683.md"
+  ]
+};
+
+// Process articles: merge bilingual pairs
+// A bilingual pair is: "xxx.md" (English) + "xxx-cn.md" (Chinese)
+function processArticles(fileList) {
+  const cnSuffix = '-cn.md';
+  const cnFiles = new Set(fileList.filter(f => f.endsWith(cnSuffix)));
+  const entries = [];
+  const processed = new Set();
+
+  for (const file of fileList) {
+    if (processed.has(file)) continue;
+
+    if (file.endsWith(cnSuffix)) {
+      // This is a CN file, find its EN counterpart
+      const base = file.slice(0, -cnSuffix.length);
+      const enFile = base + '.md';
+      if (fileList.includes(enFile)) {
+        // Bilingual pair - show CN entry
+        entries.push({ cn: file, en: enFile, bilingual: true });
+        processed.add(file);
+        processed.add(enFile);
+      } else {
+        // CN only
+        entries.push({ cn: file, bilingual: false });
+        processed.add(file);
+      }
+    } else {
+      // Check if this EN file has a CN counterpart
+      const base = file.slice(0, -'.md'.length);
+      const cnFile = base + cnSuffix;
+      if (cnFiles.has(cnFile)) {
+        // Bilingual pair - will be handled when we hit the CN file
+        // But in case CN comes after EN in the list, handle here
+        entries.push({ cn: cnFile, en: file, bilingual: true });
+        processed.add(file);
+        processed.add(cnFile);
+      } else {
+        // Single file (no CN counterpart)
+        entries.push({ file: file, bilingual: false });
+        processed.add(file);
+      }
+    }
+  }
+
+  return entries;
+}
+
+// Sort folders by date descending
+const sortedFolders = Object.keys(articles).sort((a, b) => b.localeCompare(a));
+
+const treeEl = document.getElementById('tree');
+const contentHeader = document.getElementById('content-header');
+const contentBody = document.getElementById('content-body');
+
+// Content cache: stores markdown text of each file
+const contentCache = {};
+
+// Extract title from markdown content (first # heading or first line)
+function extractTitle(md) {
+  const match = md.match(/^#\s+(.+)$/m);
+  if (match) return match[1].trim();
+  const firstLine = md.trim().split('\n')[0];
+  return firstLine ? firstLine.replace(/^#+\s*/, '').trim() : 'Untitled';
+}
+
+async function fetchMd(path) {
+  if (contentCache[path]) return contentCache[path];
+  const res = await fetch(path);
+  if (!res.ok) throw new Error('Failed to load');
+  const md = await res.text();
+  contentCache[path] = md;
+  return md;
+}
+
+// Build tree UI
+function buildTree() {
+  sortedFolders.forEach((folder, idx) => {
+    const folderEl = document.createElement('div');
+    folderEl.className = 'folder';
+
+    const headerEl = document.createElement('div');
+    headerEl.className = 'folder-header';
+    headerEl.innerHTML = `
+      <span class="arrow${idx === 0 ? ' open' : ''}">&#9654;</span>
+      <svg class="folder-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/>
+      </svg>
+      <span>${folder}</span>
+    `;
+
+    const listEl = document.createElement('div');
+    listEl.className = 'file-list' + (idx === 0 ? ' open' : '');
+
+    const entries = processArticles(articles[folder]);
+
+    entries.forEach(entry => {
+      const itemEl = document.createElement('div');
+      itemEl.className = 'file-item';
+
+      if (entry.bilingual) {
+        // Use CN file as the display key
+        itemEl.dataset.cn = `${folder}/${entry.cn}`;
+        itemEl.dataset.en = `${folder}/${entry.en}`;
+        itemEl.dataset.bilingual = 'true';
+        itemEl.innerHTML = `
+          <svg class="file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+          </svg>
+          <span class="file-name">${entry.cn}</span>
+          <span class="bilingual-badge">CN / EN</span>
+        `;
+        // Preload both files and update title from CN
+        preloadTitle(folder, entry.cn, itemEl);
+        preloadContent(folder, entry.en);
+      } else {
+        const file = entry.cn || entry.file;
+        itemEl.dataset.file = `${folder}/${file}`;
+        itemEl.innerHTML = `
+          <svg class="file-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"/>
+          </svg>
+          <span class="file-name">${file}</span>
+        `;
+        preloadTitle(folder, file, itemEl);
+      }
+
+      itemEl.addEventListener('click', () => handleClick(itemEl));
+      listEl.appendChild(itemEl);
+    });
+
+    headerEl.addEventListener('click', () => {
+      const arrow = headerEl.querySelector('.arrow');
+      arrow.classList.toggle('open');
+      listEl.classList.toggle('open');
+    });
+
+    folderEl.appendChild(headerEl);
+    folderEl.appendChild(listEl);
+    treeEl.appendChild(folderEl);
+  });
+}
+
+async function preloadContent(folder, file) {
+  const path = `${folder}/${file}`;
+  try { await fetchMd(path); } catch (e) { /* ignore */ }
+}
+
+async function preloadTitle(folder, file, itemEl) {
+  const path = `${folder}/${file}`;
+  try {
+    const md = await fetchMd(path);
+    const title = extractTitle(md);
+    const el = itemEl.querySelector('.file-name');
+    if (el) el.textContent = title;
+  } catch (e) {
+    // ignore
+  }
+}
+
+async function handleClick(itemEl) {
+  // Update active state
+  document.querySelectorAll('.file-item.active').forEach(el => el.classList.remove('active'));
+  itemEl.classList.add('active');
+
+  contentHeader.style.display = '';
+
+  if (itemEl.dataset.bilingual === 'true') {
+    await loadBilingual(itemEl.dataset.cn, itemEl.dataset.en);
+  } else {
+    await loadSingle(itemEl.dataset.file);
+  }
+}
+
+async function loadSingle(path) {
+  contentHeader.textContent = path;
+
+  let md;
+  try {
+    md = await fetchMd(path);
+  } catch (e) {
+    contentBody.innerHTML = `<div class="placeholder">Failed to load file</div>`;
+    return;
+  }
+
+  const html = marked.parse(md);
+  contentBody.className = 'content-body single';
+  contentBody.innerHTML = `<article class="markdown-body">${html}</article>`;
+}
+
+async function loadBilingual(cnPath, enPath) {
+  contentHeader.textContent = `${cnPath.split('/')[0]} / ${cnPath.split('/').pop().replace('-cn.md', '')} (CN / EN)`;
+
+  let cnMd, enMd;
+  try {
+    [cnMd, enMd] = await Promise.all([fetchMd(cnPath), fetchMd(enPath)]);
+  } catch (e) {
+    contentBody.innerHTML = `<div class="placeholder">Failed to load files</div>`;
+    return;
+  }
+
+  const cnHtml = marked.parse(cnMd);
+  const enHtml = marked.parse(enMd);
+
+  contentBody.className = 'content-body dual';
+  contentBody.innerHTML = `
+    <div class="dual-pane">
+      <div class="pane-label">Chinese</div>
+      <article class="markdown-body">${cnHtml}</article>
+    </div>
+    <div class="dual-pane">
+      <div class="pane-label">English</div>
+      <article class="markdown-body">${enHtml}</article>
+    </div>
+  `;
+
+  // Sync scroll between panes
+  const panes = contentBody.querySelectorAll('.dual-pane');
+  let syncing = false;
+  panes.forEach((pane, i) => {
+    pane.addEventListener('scroll', () => {
+      if (syncing) return;
+      syncing = true;
+      const other = panes[1 - i];
+      const ratio = pane.scrollTop / (pane.scrollHeight - pane.clientHeight || 1);
+      other.scrollTop = ratio * (other.scrollHeight - other.clientHeight);
+      syncing = false;
+    });
+  });
+}
+
+buildTree();
+
+// Sidebar resize handle
+const sidebar = document.getElementById('sidebar');
+const resizeHandle = document.getElementById('resize-handle');
+let isResizing = false;
+
+resizeHandle.addEventListener('mousedown', (e) => {
+  isResizing = true;
+  resizeHandle.classList.add('active');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isResizing) return;
+  const newWidth = e.clientX;
+  const min = parseInt(getComputedStyle(sidebar).minWidth);
+  const max = window.innerWidth * 0.5;
+  if (newWidth >= min && newWidth <= max) {
+    sidebar.style.width = newWidth + 'px';
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (!isResizing) return;
+  isResizing = false;
+  resizeHandle.classList.remove('active');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+});
+</script>
+</body>
+</html>
