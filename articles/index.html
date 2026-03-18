@@ -249,6 +249,13 @@
     position: relative;
   }
 
+  mark.note-highlight-pending {
+    background: #fff8c5;
+    border-bottom: 2px solid #d4a72c;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+
   /* Note tooltip */
   .note-tooltip {
     position: fixed;
@@ -741,6 +748,10 @@ function highlightRange(container, startOffset, endOffset, noteId, hasNote) {
     const localStart = overlapStart - nodeStart;
     const localEnd = overlapEnd - nodeStart;
 
+    // Skip whitespace-only text nodes between block elements (e.g. between <p> tags)
+    const textSlice = node.textContent.slice(localStart, localEnd);
+    if (!textSlice.trim()) continue;
+
     const range = document.createRange();
     range.setStart(node, localStart);
     range.setEnd(node, localEnd);
@@ -775,15 +786,28 @@ async function applyNotes(filePath, container) {
 // ---- Note input popover ----
 let activePopover = null;
 
+function removePendingHighlights() {
+  document.querySelectorAll('.note-highlight-pending').forEach(m => {
+    const parent = m.parentNode;
+    while (m.firstChild) parent.insertBefore(m.firstChild, m);
+    m.remove();
+  });
+}
+
 function removePopover() {
   if (activePopover) {
     activePopover.remove();
     activePopover = null;
   }
+  removePendingHighlights();
 }
 
 function showNoteInput(x, y, callback) {
-  removePopover();
+  // Only remove existing popover, keep pending highlights
+  if (activePopover) {
+    activePopover.remove();
+    activePopover = null;
+  }
 
   const popover = document.createElement('div');
   popover.className = 'note-input-popover';
@@ -935,8 +959,21 @@ document.addEventListener('mouseup', (e) => {
   const px = lastRect.right;
   const py = lastRect.bottom;
 
+  // Apply temporary visual highlight and clear selection
+  const pendingMarks = highlightRange(container, startOffset, endOffset, 'pending', false);
+  pendingMarks.forEach(m => { m.className = 'note-highlight-pending'; });
+  sel.removeAllRanges();
+
+  const removePendingMarks = () => {
+    pendingMarks.forEach(m => {
+      const parent = m.parentNode;
+      while (m.firstChild) parent.insertBefore(m.firstChild, m);
+      m.remove();
+    });
+  };
+
   showNoteInput(px, py, async (noteText) => {
-    sel.removeAllRanges();
+    removePendingMarks();
 
     const notes = notesCache[filePath] || [];
     const newNote = {
