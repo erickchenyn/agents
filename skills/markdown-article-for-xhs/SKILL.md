@@ -41,7 +41,7 @@ The note ID is needed for the filename and the canonical URL:
 The filename uses an `xhs-` prefix followed by the note ID:
 
 ```
-~/.claude/articles/2026-03-19/xhs-690afc280000000003021ea2.md
+<project_root>/articles/2026-03-19/xhs-690afc280000000003021ea2.md
 ```
 
 ## Output structure
@@ -74,4 +74,4 @@ The filename uses an `xhs-` prefix followed by the note ID:
 ## Example
 
 Source URL: `http://xhslink.com/o/8Z2fmYgDoWW`
-Output path: `~/.claude/articles/2026-03-19/xhs-690afc280000000003021ea2.md`
+Output path: `<project_root>/articles/2026-03-19/xhs-690afc280000000003021ea2.md`

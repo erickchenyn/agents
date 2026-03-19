@@ -28,7 +28,7 @@ The filename uses an `x-` prefix followed by the article ID:
 - `x-<id>`: the `<id>` is extracted from the URL path (the last segment), e.g. for `https://x.com/HiTw93/status/2032091246588518683` the ID is `2032091246588518683`
 
 ```
-~/.claude/articles/2026-03-14/x-2032091246588518683.md
+<project_root>/articles/2026-03-14/x-2032091246588518683.md
 ```
 
 ## Output structure
@@ -48,4 +48,4 @@ The filename uses an `x-` prefix followed by the article ID:
 ## Example
 
 Source URL: `https://x.com/HiTw93/status/2032091246588518683`
-Output path: `~/.claude/articles/2026-03-14/x-2032091246588518683.md`
+Output path: `<project_root>/articles/2026-03-14/x-2032091246588518683.md`
