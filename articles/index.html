@@ -182,6 +182,84 @@
     color: #656d76;
     border-bottom: 1px solid #d1d9e0;
     background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .notes-btn {
+    background: none;
+    border: none;
+    padding: 2px;
+    color: #656d76;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .notes-btn:hover {
+    color: #1f2328;
+  }
+
+  .notes-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notes-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    width: 520px;
+    max-width: 90vw;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notes-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px;
+  }
+
+  .notes-modal-empty {
+    padding: 32px 0;
+    text-align: center;
+    color: #656d76;
+    font-size: 14px;
+  }
+
+  .notes-modal-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f2f5;
+  }
+
+  .notes-modal-item:last-child {
+    border-bottom: none;
+  }
+
+  .notes-modal-quote {
+    font-size: 13px;
+    color: #1f2328;
+    background: #fff8c5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 3px solid #d4a72c;
+    line-height: 1.5;
+  }
+
+  .notes-modal-note {
+    font-size: 13px;
+    color: #656d76;
+    margin-top: 6px;
+    padding-left: 11px;
+    line-height: 1.5;
   }
 
   .pane-body {
@@ -532,8 +610,13 @@ async function handleClick(itemEl) {
 
 function renderPane(path, html) {
   return `
-    <div class="pane">
-      <div class="pane-header">${path.replace('/', ' / ')}</div>
+    <div class="pane" data-path="${path}">
+      <div class="pane-header">
+        <span>${path.replace('/', ' / ')}</span>
+        <button class="notes-btn" data-notes-path="${path}">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm11 3a.75.75 0 0 1-.75.75h-8.5a.75.75 0 0 1 0-1.5h8.5a.75.75 0 0 1 .75.75Zm-.75 3.25a.75.75 0 0 1 0 1.5h-8.5a.75.75 0 0 1 0-1.5Z"/></svg>
+        </button>
+      </div>
       <div class="pane-body">
         <article class="markdown-body">${html}</article>
       </div>
@@ -541,7 +624,9 @@ function renderPane(path, html) {
   `;
 }
 
+
 async function loadArticles(paths) {
+  closeNotesModal();
   let markdowns;
   try {
     markdowns = await Promise.all(paths.map(p => fetchMd(p)));
@@ -996,6 +1081,70 @@ document.addEventListener('mouseover', (e) => {
 document.addEventListener('mouseout', (e) => {
   const mark = e.target.closest('mark.note-highlight.has-note');
   if (mark) removeTooltip();
+});
+
+// ---- Notes list modal ----
+let notesModal = null;
+
+function closeNotesModal() {
+  if (notesModal) {
+    notesModal.remove();
+    notesModal = null;
+  }
+}
+
+function openNotesModal(filePath) {
+  closeNotesModal();
+  const notes = notesCache[filePath] || [];
+
+  const overlay = document.createElement('div');
+  overlay.className = 'notes-overlay';
+
+  let bodyHtml;
+  if (notes.length === 0) {
+    bodyHtml = '<div class="notes-modal-empty">No notes yet</div>';
+  } else {
+    bodyHtml = notes.map(n => `
+    <div class="notes-modal-item">
+      <div class="notes-modal-quote">${escapeHtml(n.text)}</div>
+      ${n.note ? `<div class="notes-modal-note">${escapeHtml(n.note)}</div>` : ''}
+    </div>
+  `).join('');
+  }
+
+  overlay.innerHTML = `
+    <div class="notes-modal">
+      <div class="notes-modal-body">${bodyHtml}</div>
+    </div>
+  `;
+
+  overlay.addEventListener('mousedown', (e) => {
+    if (e.target === overlay) closeNotesModal();
+  });
+
+  const onKeydown = (e) => {
+    if (e.key === 'Escape') {
+      closeNotesModal();
+      document.removeEventListener('keydown', onKeydown);
+    }
+  };
+  document.addEventListener('keydown', onKeydown);
+
+  document.body.appendChild(overlay);
+  notesModal = overlay;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.notes-btn');
+  if (!btn) return;
+  e.stopPropagation();
+  openNotesModal(btn.dataset.notesPath);
 });
 
 // ---- Reload current article to re-apply highlights ----
