@@ -3,4 +3,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`8ca5a20f4d41cc1b28a35ea8ed4d49abecd4ef85`](https://github.com/erickchenyn/claude/commit/8ca5a20f4d41cc1b28a35ea8ed4d49abecd4ef85).*
+*This document was automatically generated based on commit [`add90b796e972dfbdfb35a9d004a2736af385ea1`](https://github.com/erickchenyn/claude/commit/add90b796e972dfbdfb35a9d004a2736af385ea1).*
