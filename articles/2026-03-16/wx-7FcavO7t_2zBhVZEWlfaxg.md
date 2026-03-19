@@ -1,10 +1,10 @@
 # "Claude Code 这条路线错了"！元老级 AI 大师 Jeremy Howard 开炮：马斯克和 Dario 根本不懂现代软件工程
 
-> 来源：InfoQ（微信公众号）
-> 作者：核子可乐、Tina
-> 日期：2026 年 3 月 16 日
-> 原文链接：https://mp.weixin.qq.com/s/7FcavO7t_2zBhVZEWlfaxg
-> 视频原文：https://www.youtube.com/watch?v=dHBEQ-Ryo24&t=3914s
+> - 来源：InfoQ（微信公众号）
+> - 作者：核子可乐、Tina
+> - 日期：2026 年 3 月 16 日
+> - 原文链接：https://mp.weixin.qq.com/s/7FcavO7t_2zBhVZEWlfaxg
+> - 视频原文：https://www.youtube.com/watch?v=dHBEQ-Ryo24&t=3914s
 
 ---
 

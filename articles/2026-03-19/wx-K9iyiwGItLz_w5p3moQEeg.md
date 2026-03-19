@@ -1,9 +1,9 @@
 # 这个时代可能需要马克思
 
-> 来源：然不（微信公众号）
-> 作者：然不
-> 日期：2026-03-12
-> 原文链接：https://mp.weixin.qq.com/s/K9iyiwGItLz_w5p3moQEeg
+> - 来源：然不（微信公众号）
+> - 作者：然不
+> - 日期：2026-03-12
+> - 原文链接：https://mp.weixin.qq.com/s/K9iyiwGItLz_w5p3moQEeg
 
 ---
 

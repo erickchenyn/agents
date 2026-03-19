@@ -1,9 +1,9 @@
 # Harness Engineering 为什么是 Agent 时代的"控制论"？
 
-> 来源：海外独角兽（微信公众号）
-> 作者：George Zhang
-> 日期：2026-03-18
-> 原文链接：https://mp.weixin.qq.com/s/SVUybMZb6uh5OCR3ceoBVA
+> - 来源：海外独角兽（微信公众号）
+> - 作者：George Zhang
+> - 日期：2026-03-18
+> - 原文链接：https://mp.weixin.qq.com/s/SVUybMZb6uh5OCR3ceoBVA
 
 ---
 
