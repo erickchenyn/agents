@@ -21,4 +21,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`487f5a3dbb26529c8f22071ac4a76ffaa37bb7a0`](https://github.com/erickchenyn/claude/commit/487f5a3dbb26529c8f22071ac4a76ffaa37bb7a0).*
+*This document was automatically generated based on commit [`dfb9764c0b766a7da996a43f872261adb806d30b`](https://github.com/erickchenyn/claude/commit/dfb9764c0b766a7da996a43f872261adb806d30b).*
