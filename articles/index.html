@@ -670,6 +670,9 @@ async function init() {
   }
   sortedFolders = Object.keys(articles).sort((a, b) => b.localeCompare(a));
   buildTree();
+
+  // Open file from URL query param after tree is built
+  openFileFromParam(new URLSearchParams(window.location.search).get('file'));
 }
 init();
 
@@ -695,8 +698,6 @@ function openFileFromParam(filePath) {
     loadArticles([target.dataset.file]);
   }
 }
-
-openFileFromParam(new URLSearchParams(window.location.search).get('file'));
 
 window.addEventListener('popstate', () => {
   const filePath = new URLSearchParams(window.location.search).get('file');
