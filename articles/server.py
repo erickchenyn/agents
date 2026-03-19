@@ -5,7 +5,7 @@ import json
 import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
-PORT = 8080
+PORT = int(os.environ.get("PORT", 8080))
 
 class Handler(SimpleHTTPRequestHandler):
     def do_POST(self):
