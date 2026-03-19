@@ -1,5 +1,5 @@
 ---
-name: articles-reader
+name: markdown-articles-reader
 description: Use when user wants to start/open the articles reader. Triggers on phrases like "启动文章阅读器", "打开阅读器", "start articles reader", etc.
 ---
 
@@ -29,6 +29,7 @@ Start the articles reader — a local web app for browsing and annotating saved 
 ### Stopping the reader
 
 If the user asks to stop/close the reader, find and kill the Python server process on port 8080:
+
 ```bash
 lsof -ti:8080 | xargs kill
 ```
