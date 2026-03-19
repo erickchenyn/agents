@@ -1,5 +1,10 @@
 # Articles
 
+- **2026-03-19**
+  - [这个时代可能需要马克思](articles/2026-03-19/wx-K9iyiwGItLz_w5p3moQEeg.md)
+  - [Harness Engineering 为什么是 Agent 时代的"控制论"？](articles/2026-03-19/wx-SVUybMZb6uh5OCR3ceoBVA.md)
+- **2026-03-17**
+  - [黄仁勋 GTC 2026 演讲实录：所有 SaaS 公司都将消失；Token 成本全球最低；"龙虾"创造了历史；Feynman 架构已在路上](articles/2026-03-17/wx-NatXWU9mjpKnKGWiWlTRpQ.md)
 - **2026-03-16**
   - [万字长文：2025 年，我对 AI 编程的全部理解——Part 1](articles/2026-03-16/1773808651322.md)
   - [解析 OpenClaw 26.3.8 大更新及 mem9 如何利用新 ContextEngine 接口实现全周期记忆管理](articles/2026-03-16/wx-4v1hRcNyuYMRcFHCr-2S4Q.md)
@@ -16,4 +21,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`8b078690401a46a52bb6aed1416a7bc9d126a7aa`](https://github.com/erickchenyn/claude/commit/8b078690401a46a52bb6aed1416a7bc9d126a7aa).*
+*This document was automatically generated based on commit [`487f5a3dbb26529c8f22071ac4a76ffaa37bb7a0`](https://github.com/erickchenyn/claude/commit/487f5a3dbb26529c8f22071ac4a76ffaa37bb7a0).*
