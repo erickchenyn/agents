@@ -3,6 +3,7 @@
 - **2026-03-19**
   - [这个时代可能需要马克思](articles/2026-03-19/wx-K9iyiwGItLz_w5p3moQEeg.md)
   - [Harness Engineering 为什么是 Agent 时代的"控制论"？](articles/2026-03-19/wx-SVUybMZb6uh5OCR3ceoBVA.md)
+  - [Apple Watch 15 个健康功能超全解析！](articles/2026-03-19/xhs-690afc280000000003021ea2.md)
 - **2026-03-17**
   - [黄仁勋 GTC 2026 演讲实录：所有 SaaS 公司都将消失；Token 成本全球最低；"龙虾"创造了历史；Feynman 架构已在路上](articles/2026-03-17/wx-NatXWU9mjpKnKGWiWlTRpQ.md)
 - **2026-03-16**
@@ -21,4 +22,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`e21f6717f70391e50d084190580cd481752d5228`](https://github.com/erickchenyn/claude/commit/e21f6717f70391e50d084190580cd481752d5228).*
+*This document was automatically generated based on commit [`33ac47d0af48fdbe8205a6266f81e91d8ccfa338`](https://github.com/erickchenyn/claude/commit/33ac47d0af48fdbe8205a6266f81e91d8ccfa338).*
