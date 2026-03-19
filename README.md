@@ -14,4 +14,4 @@ This repository contains Claude Code global prompts for personal use.
 
 ---
 
-*This document was automatically generated based on commit [`b188725505cf59eaeb27bc4a1643a5b522e9ad5a`](https://github.com/erickchenyn/claude/commit/b188725505cf59eaeb27bc4a1643a5b522e9ad5a).*
+*This document was automatically generated based on commit [`7af592e98f15a789edb35747557a92cd1a4d0fc9`](https://github.com/erickchenyn/claude/commit/7af592e98f15a789edb35747557a92cd1a4d0fc9).*
