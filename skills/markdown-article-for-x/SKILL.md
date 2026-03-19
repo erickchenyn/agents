@@ -13,9 +13,13 @@ X pages are fully JavaScript-rendered. `curl`, `WebFetch`, and other static fetc
 
 After navigating to the page:
 
-1. If the page has a "Focus mode" link (`/article/` path), navigate to it for a cleaner layout
-2. When extracting images, query `img` elements whose `src` contains `pbs.twimg.com/media/`, and replace `name=small` with `name=large` for high resolution
-3. Remove X-specific UI noise: follower counts, "Sign up", "Log in", engagement metrics, "Want to publish your own Article?", etc.
+1. Extract metadata before entering Focus mode:
+   - **Author display name**: from the page title (format `<name> on X: "..."`) or from the link text pointing to the author's profile
+   - **Username**: from the URL path (e.g. `HiTw93` from `x.com/HiTw93/status/...`)
+   - **Publish date**: from the `<time>` element's `datetime` attribute
+2. If the page has a "Focus mode" link (`/article/` path), navigate to it for a cleaner layout
+3. When extracting images, query `img` elements whose `src` contains `pbs.twimg.com/media/`, and replace `name=small` with `name=large` for high resolution
+4. Remove X-specific UI noise: follower counts, "Sign up", "Log in", engagement metrics, "Want to publish your own Article?", etc.
 
 ## File location override
 
@@ -27,21 +31,21 @@ The filename uses an `x-` prefix followed by the article ID:
 ~/.claude/articles/2026-03-14/x-2032091246588518683.md
 ```
 
+## Output structure
+
+```markdown
+# <article title>
+
+> - 作者：<author display name>（X @username）
+> - 日期：<publish date>
+> - 原文链接：<original URL>
+
+---
+
+<markdown body>
+```
+
 ## Example
 
 Source URL: `https://x.com/HiTw93/status/2032091246588518683`
 Output path: `~/.claude/articles/2026-03-14/x-2032091246588518683.md`
-
-The file starts like this:
-
-```markdown
-# 你不知道的 Claude Code：架构、治理与工程实践
-
-> https://x.com/HiTw93/status/2032091246588518683
-
-## 0. 太长不读
-
-今天这篇文章源于最近半年深度使用 Claude Code、两个账号每月 40 刀氪金换来的一些踩坑经验，希望能给大伙一些输入。
-
-...
-```
