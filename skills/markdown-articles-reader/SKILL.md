@@ -7,7 +7,7 @@ Start the articles reader — a local web app for browsing and annotating saved 
 
 ## Architecture
 
-- **Server**: `~/.claude/articles/server.py` — Python HTTP server on port 8080, serves static files, provides a notes API (`POST /api/notes`) and an articles listing API (`GET /api/articles`)
+- **Server**: `~/.claude/articles/local.py` — Python HTTP server on port 8080, serves static files, provides a notes API (`POST /api/notes`) and an articles listing API (`GET /api/articles`)
 - **Frontend**: `~/.claude/articles/index.html` — SPA with sidebar file tree (grouped by date), markdown rendering, CN/EN bilingual dual-pane view, text highlighting, and note annotations
 - **Articles**: stored as `.md` files under `~/.claude/articles/<YYYY-MM-DD>/`, with optional `.notes.json` sidecar files for highlights
 - **Article index**: dynamically fetched from the server via `GET /api/articles` — no manual index update needed
@@ -18,7 +18,7 @@ Start the articles reader — a local web app for browsing and annotating saved 
 
 1. Start the server in background:
    ```bash
-   cd ~/.claude/articles && python3 server.py
+   cd ~/.claude/articles && python3 local.py
    ```
 2. Open the browser:
    ```bash
@@ -37,4 +37,4 @@ lsof -ti:8080 | xargs kill
 ## Notes
 
 - The server must be started from the `~/.claude/articles/` directory (it does `os.chdir` to its own directory)
-- Default port is 8080, can be overridden via `PORT` env var (e.g. `PORT=8090 python3 server.py`); if 8080 is occupied, check what's using it and use an alternative port
+- Default port is 8080, can be overridden via `PORT` env var (e.g. `PORT=8090 python3 local.py`); if 8080 is occupied, check what's using it and use an alternative port
