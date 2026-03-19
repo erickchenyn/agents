@@ -409,6 +409,29 @@
     color: #fff;
   }
 
+  .note-fab {
+    position: fixed;
+    z-index: 99;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #d1d9e0;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #656d76;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .note-fab:hover {
+    background: #fff8c5;
+    color: #6a5300;
+    border-color: #d4a72c;
+  }
+
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -973,11 +996,23 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- Selection handler ----
+let noteFab = null;
+
+function removeNoteFab() {
+  if (noteFab) {
+    noteFab.remove();
+    noteFab = null;
+  }
+}
+
 document.addEventListener('mouseup', (e) => {
-  // Ignore if clicking on the popover itself
+  // Ignore if clicking on the popover or fab itself
   if (activePopover && activePopover.contains(e.target)) return;
+  if (noteFab && noteFab.contains(e.target)) return;
   // Ignore if clicking on an existing highlight (handled by click handler)
   if (e.target.closest('mark.note-highlight')) return;
+
+  removeNoteFab();
 
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
@@ -991,50 +1026,82 @@ document.addEventListener('mouseup', (e) => {
   const selectedText = sel.toString().trim();
   if (!selectedText) return;
 
-  const filePath = container.dataset.filePath;
-  const startOffset = getGlobalOffset(container, range.startContainer, range.startOffset);
-  const endOffset = getGlobalOffset(container, range.endContainer, range.endOffset);
-
-  // Show popover near the end of selection
+  // Show floating note button near the end of selection
   const rects = range.getClientRects();
   const lastRect = rects[rects.length - 1];
-  const px = lastRect.right;
-  const py = lastRect.bottom;
 
-  // Apply temporary visual highlight and clear selection
-  const pendingMarks = highlightRange(container, startOffset, endOffset, 'pending', false);
-  pendingMarks.forEach(m => { m.className = 'note-highlight-pending'; });
-  sel.removeAllRanges();
+  const fab = document.createElement('div');
+  fab.className = 'note-fab';
+  fab.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.93 8.5a4.002 4.002 0 0 1-7.86 0H.75a.75.75 0 0 1 0-1.5h3.32a4.002 4.002 0 0 1 7.86 0h3.32a.75.75 0 0 1 0 1.5Zm-1.43-.75a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg>';
 
-  const removePendingMarks = () => {
-    pendingMarks.forEach(m => {
-      const parent = m.parentNode;
-      while (m.firstChild) parent.insertBefore(m.firstChild, m);
-      m.remove();
-    });
-  };
+  let left = lastRect.right + 4;
+  let top = lastRect.top + (lastRect.height - 28) / 2;
+  if (left + 36 > window.innerWidth) left = lastRect.left - 32;
+  if (top < 4) top = 4;
+  fab.style.left = left + 'px';
+  fab.style.top = top + 'px';
 
-  showNoteInput(px, py, async (noteText) => {
-    removePendingMarks();
-
-    const notes = notesCache[filePath] || [];
-    const newNote = {
-      id: Date.now(),
-      startOffset,
-      endOffset,
-      text: selectedText,
-      note: noteText
-    };
-    notes.push(newNote);
-    await saveNotes(filePath, notes);
-
-    // Re-highlight: re-render the article
-    reloadCurrentArticle();
+  // Prevent mousedown on fab from clearing the selection
+  fab.addEventListener('mousedown', (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
   });
+
+  fab.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    removeNoteFab();
+
+    const currentSel = window.getSelection();
+    if (!currentSel || currentSel.isCollapsed) return;
+
+    const currentRange = currentSel.getRangeAt(0);
+    const filePath = container.dataset.filePath;
+    const startOffset = getGlobalOffset(container, currentRange.startContainer, currentRange.startOffset);
+    const endOffset = getGlobalOffset(container, currentRange.endContainer, currentRange.endOffset);
+    const text = currentSel.toString().trim();
+
+    const px = lastRect.right;
+    const py = lastRect.bottom;
+
+    // Apply temporary visual highlight and clear selection
+    const pendingMarks = highlightRange(container, startOffset, endOffset, 'pending', false);
+    pendingMarks.forEach(m => { m.className = 'note-highlight-pending'; });
+    currentSel.removeAllRanges();
+
+    const removePendingMarks = () => {
+      pendingMarks.forEach(m => {
+        const parent = m.parentNode;
+        while (m.firstChild) parent.insertBefore(m.firstChild, m);
+        m.remove();
+      });
+    };
+
+    showNoteInput(px, py, async (noteText) => {
+      removePendingMarks();
+
+      const notes = notesCache[filePath] || [];
+      const newNote = {
+        id: Date.now(),
+        startOffset,
+        endOffset,
+        text,
+        note: noteText
+      };
+      notes.push(newNote);
+      await saveNotes(filePath, notes);
+      reloadCurrentArticle();
+    });
+  });
+
+  document.body.appendChild(fab);
+  noteFab = fab;
 });
 
-// Close popover when clicking outside
+// Close popover and fab when clicking outside
 document.addEventListener('mousedown', (e) => {
+  if (noteFab && !noteFab.contains(e.target)) {
+    removeNoteFab();
+  }
   if (activePopover && !activePopover.contains(e.target)) {
     removePopover();
   }
