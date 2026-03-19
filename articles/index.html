@@ -370,24 +370,8 @@
 </div>
 
 <script>
-// File tree data - generated from articles directory
-const articles = {
-  "2026-03-16": [
-    "1773808651322.md",
-    "wx-4v1hRcNyuYMRcFHCr-2S4Q.md",
-    "wx-7FcavO7t_2zBhVZEWlfaxg.md",
-    "x-2016614384886526221.md",
-    "x-2018385296610746403.md",
-    "x-2018385296610746403-cn.md",
-    "x-2033303156340240481.md",
-    "x-2033303156340240481-cn.md"
-  ],
-  "2026-03-14": [
-    "x-2027225210412470668.md",
-    "x-2027225210412470668-cn.md",
-    "x-2032091246588518683.md"
-  ]
-};
+// File tree data - fetched dynamically from server
+let articles = {};
 
 // Process articles: merge bilingual pairs
 // A bilingual pair is: "xxx.md" (English) + "xxx-cn.md" (Chinese)
@@ -435,8 +419,7 @@ function processArticles(fileList) {
   return entries;
 }
 
-// Sort folders by date descending
-const sortedFolders = Object.keys(articles).sort((a, b) => b.localeCompare(a));
+let sortedFolders = [];
 
 const treeEl = document.getElementById('tree');
 const contentHeader = document.getElementById('content-header');
@@ -628,7 +611,18 @@ async function loadBilingual(cnPath, enPath) {
   });
 }
 
-buildTree();
+// Fetch articles list from server, then build the tree
+async function init() {
+  try {
+    const res = await fetch('/api/articles');
+    articles = await res.json();
+  } catch (e) {
+    console.error('Failed to fetch articles:', e);
+  }
+  sortedFolders = Object.keys(articles).sort((a, b) => b.localeCompare(a));
+  buildTree();
+}
+init();
 
 // Open file from URL query param
 function openFileFromParam(filePath) {

@@ -8,6 +8,21 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 PORT = int(os.environ.get("PORT", 8080))
 
 class Handler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/api/articles":
+            articles = {}
+            for entry in sorted(os.listdir("."), reverse=True):
+                if os.path.isdir(entry) and not entry.startswith("."):
+                    files = sorted(f for f in os.listdir(entry) if f.endswith(".md"))
+                    if files:
+                        articles[entry] = files
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(articles).encode())
+        else:
+            super().do_GET()
+
     def do_POST(self):
         if self.path == "/api/notes":
             length = int(self.headers.get("Content-Length", 0))
