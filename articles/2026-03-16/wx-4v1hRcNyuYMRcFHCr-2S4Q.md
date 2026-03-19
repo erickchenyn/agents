@@ -1,9 +1,9 @@
 # 解析 OpenClaw 26.3.8 大更新及 mem9 如何利用新 ContextEngine 接口实现全周期记忆管理
 
-> 来源：我世界的源代码（微信公众号）
-> 作者：dongxu
-> 日期：2026 年 3 月 10 日
-> 原文链接：https://mp.weixin.qq.com/s/4v1hRcNyuYMRcFHCr-2S4Q
+> - 来源：我世界的源代码（微信公众号）
+> - 作者：dongxu
+> - 日期：2026 年 3 月 10 日
+> - 原文链接：https://mp.weixin.qq.com/s/4v1hRcNyuYMRcFHCr-2S4Q
 
 ---
 

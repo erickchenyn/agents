@@ -47,10 +47,10 @@ The filename uses a `wx-` prefix followed by the `sn_hash` from the short link U
 ```markdown
 # <article title>
 
-> 来源：<official account name>（微信公众号）
-> 作者：<author>
-> 日期：<publish date>
-> 原文链接：<short link URL>
+> - 来源：<official account name>（微信公众号）
+> - 作者：<author>
+> - 日期：<publish date>
+> - 原文链接：<short link URL>
 
 ---
 
