@@ -35,7 +35,7 @@ A single `.md` file with the following structure:
 
 ### File location
 
-The file MUST be saved to `~/.claude/articles/<date>/<slug>.md` (i.e. under the global `.claude` directory, NOT the project directory):
+The file MUST be saved to `<project_root>/articles/<date>/<slug>.md`, where `<project_root>` is the current working directory (the project root where Claude Code is running):
 
 - `<date>`: the date when this skill is executed, formatted as `YYYY-MM-DD` (e.g. `2026-03-14`)
 - `<slug>`: a Unix timestamp in milliseconds at the time of execution (e.g. `1742280000000`)

@@ -39,7 +39,7 @@ The filename uses a `wx-` prefix followed by the `sn_hash` from the short link U
 - `wx-<sn_hash>`: the `<sn_hash>` is extracted from the URL path, e.g. for `https://mp.weixin.qq.com/s/7FcavO7t_2zBhVZEWlfaxg` the hash is `7FcavO7t_2zBhVZEWlfaxg`
 
 ```
-~/.claude/articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md
+<project_root>/articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md
 ```
 
 ## Output structure
@@ -60,4 +60,4 @@ The filename uses a `wx-` prefix followed by the `sn_hash` from the short link U
 ## Example
 
 Source URL: `https://mp.weixin.qq.com/s/7FcavO7t_2zBhVZEWlfaxg`
-Output path: `~/.claude/articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md`
+Output path: `<project_root>/articles/2026-03-16/wx-7FcavO7t_2zBhVZEWlfaxg.md`
