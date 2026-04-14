@@ -71,6 +71,10 @@ The filename uses an `xhs-` prefix followed by the note ID:
 - Image URLs are from `ci.xiaohongshu.com/spectrum/` domain, keep the full URL including query parameters
 - Skip the author avatar image (from `sns-avatar-qc.xhscdn.com`)
 
+## Before reporting done
+
+Re-read [@markdown-article](../markdown-article/SKILL.md) and verify **every** rule defined there has been followed (translation, long-article handling, etc.). The base skill is the source of truth — do not skip this step.
+
 ## Example
 
 Source URL: `http://xhslink.com/o/8Z2fmYgDoWW`
