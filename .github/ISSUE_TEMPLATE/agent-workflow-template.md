@@ -30,4 +30,4 @@ assignees: erickchenyn
 
 ## 3. 完成并提交变更
 
-**重要**：每次修改代码后，都要用我个人的 commit skill 来提交代码、创建 pr 并把 pr 关联到这个 issue 上。不用我确认，但先不要合并 pr，等我人工 review
+**重要**：每次修改代码后，都要用我个人的 moxt-commit skill 来提交代码、创建 pr 并把 pr 关联到这个 issue 上。不用我确认，但先不要合并 pr，等我人工 review
