@@ -1,12 +1,12 @@
 {
-  "model": "us.anthropic.claude-opus-4-5-20251101-v1:0",
+  "model": "sonnet",
   "hooks": {
     "WorktreeCreate": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'NAME=$(jq -r .name <<< \"$(cat)\"); CWD=$(git rev-parse --show-toplevel); DIR=\"$CWD/.claude/worktrees/$NAME\"; git fetch origin main >&2 && git worktree add -b \"chenyn-$NAME\" \"$DIR\" origin/main >&2 && echo \"$DIR\"'"
+            "command": "bash -c 'NAME=$(jq -r .name <<< \"$(cat)\"); CWD=$(git rev-parse --show-toplevel); DIR=\"$CWD/.claude/worktrees/$NAME\"; mkdir -p \"$(dirname \"$DIR\")\" && git fetch origin main >&2 && git worktree add -b \"chenyn-$NAME\" \"$DIR\" origin/main >&2 && echo \"$DIR\"'"
           }
         ]
       }
@@ -22,8 +22,8 @@
       }
     ]
   },
-  "skipDangerousModePermissionPrompt": true,
   "enabledPlugins": {
     "playwright@claude-plugins-official": true
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
