@@ -57,6 +57,10 @@ The filename uses a `wx-` prefix followed by the `sn_hash` from the short link U
 <markdown body>
 ```
 
+## Before reporting done
+
+Re-read [@markdown-article](../markdown-article/SKILL.md) and verify **every** rule defined there has been followed (translation, long-article handling, etc.). The base skill is the source of truth — do not skip this step.
+
 ## Example
 
 Source URL: `https://mp.weixin.qq.com/s/7FcavO7t_2zBhVZEWlfaxg`

@@ -45,6 +45,10 @@ The filename uses an `x-` prefix followed by the article ID:
 <markdown body>
 ```
 
+## Before reporting done
+
+Re-read [@markdown-article](../markdown-article/SKILL.md) and verify **every** rule defined there has been followed (translation, long-article handling, etc.). The base skill is the source of truth — do not skip this step.
+
 ## Example
 
 Source URL: `https://x.com/HiTw93/status/2032091246588518683`
