@@ -14,3 +14,5 @@
   - 初始化 git 数据存储的入口位于 `signals/editor-v2/git-storage/setup-git-storage.ts`
   - git 数据同步的核心代码位于 `signals/editor-v2/synergy/` 目录中
   - 流程中插入了一些本地 debug log、record log 和 datadog metric log
+- **集成测试**
+  - `moxt-test` 下的 ts 测试，不 mock 项目内的代码模块，有统一的 setup 方法，模拟用户真实的行为，验证渲染得到的 DOM 结构
