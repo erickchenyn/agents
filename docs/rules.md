@@ -28,7 +28,7 @@
 
 ### 提交
 
-- 使用 [@my-commit](/skills/my-commit/SKILL.md) skill 提交代码
+- 使用 [@commit](/skills/commit/SKILL.md) skill 提交代码
 
 ### 构建
 
