@@ -9,7 +9,7 @@ This repository contains Claude Code global prompts for personal use.
 | [markdown-article-for-xhs](skills/markdown-article-for-xhs/SKILL.md) | Use when user provides a Xiaohongshu (小红书) note URL to convert into a local markdown file. |
 | [markdown-article](skills/markdown-article/SKILL.md) | Use when user provides a web article URL to convert into a local markdown file. |
 | [markdown-articles-reader](skills/markdown-articles-reader/SKILL.md) | Use when user wants to start/open the articles reader. Triggers on phrases like "启动文章阅读器", "打开阅读器", "start articles reader", etc. |
-| [my-commit](skills/my-commit/SKILL.md) | 提交代码、跟踪 PR 状态、完成代码合并 |
+| [commit](skills/commit/SKILL.md) | 提交代码、跟踪 PR 状态、完成代码合并 |
 
 ---
 
