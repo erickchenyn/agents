@@ -1,7 +1,5 @@
 # MOXT DEV RULES
 
-基于 [rules.md](./rules.md)
-
 ## 提交
 
 - 使用 [@moxt-commit](/skills/moxt-commit/SKILL.md) skill 提交代码
