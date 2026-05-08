@@ -1,5 +1,14 @@
 # Articles
 
+- **2026-05-08**
+  - [逃离大厂之后，我才发现外面根本就没有下雨](articles/2026-05-08/x-2036725515701420062.md)
+  - [玉伯把 AI 时代小团队生产力的真相讲透了](articles/2026-05-08/x-2039579774528757976.md)
+  - [多智能体：哪些方法真正有效](articles/2026-05-08/x-2047054401341370639-cn.md)
+  - [Multi-Agents: What's Actually Working](articles/2026-05-08/x-2047054401341370639.md)
+  - [离开 Claude，发现外面根本没下雨](articles/2026-05-08/x-2052532414917104042.md)
+- **2026-04-14**
+  - [为什么你的"AI 优先"战略可能是错的](articles/2026-04-14/x-2043545596699750791-cn.md)
+  - [Why Your "AI-First" Strategy Is Probably Wrong](articles/2026-04-14/x-2043545596699750791.md)
 - **2026-03-19**
   - [这个时代可能需要马克思](articles/2026-03-19/wx-K9iyiwGItLz_w5p3moQEeg.md)
   - [Harness Engineering 为什么是 Agent 时代的"控制论"？](articles/2026-03-19/wx-SVUybMZb6uh5OCR3ceoBVA.md)
@@ -22,4 +31,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`b188725505cf59eaeb27bc4a1643a5b522e9ad5a`](https://github.com/erickchenyn/claude/commit/b188725505cf59eaeb27bc4a1643a5b522e9ad5a).*
+*This document was automatically generated based on commit [`34949aecf3394950f77afc18a134b3e06f0546c8`](https://github.com/erickchenyn/claude/commit/34949aecf3394950f77afc18a134b3e06f0546c8).*
