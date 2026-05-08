@@ -1,5 +1,5 @@
 ---
-name: base-commit
+name: commit
 description: 提交代码、跟踪 PR 状态、完成代码合并
 ---
 
@@ -44,5 +44,6 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
 
 ## 相关说明
 
-- 你可以在 git 仓库下使用 gh cli 来操作 Git
-- 你需要确保 git user 信息有效
+- 在 git 仓库下使用 gh cli 来操作 Git
+- 确保 git user 信息有效
+  - **特殊规则**：如果在 moxt/paraflow 仓库下，git user 邮箱必须是 `erick.chen@paraflow.com`
