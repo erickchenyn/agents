@@ -5,9 +5,12 @@
   - [Multi-Agents: What's Actually Working](articles/2026-05-11/x-2047054401341370639.md)
   - [使用 Claude Code：HTML 不可思议的有效性](articles/2026-05-11/x-2052809885763747935-cn.md)
   - [Using Claude Code: The Unreasonable Effectiveness of HTML](articles/2026-05-11/x-2052809885763747935.md)
+  - [元-元-提示词：让 AI Agent 真正起效的秘密](articles/2026-05-11/x-2053127519872614419-cn.md)
+  - [Meta-Meta-Prompting: The Secret to Making AI Agents Work](articles/2026-05-11/x-2053127519872614419.md)
   - [Markdown 还是 HTML？这是个蠢问题！](articles/2026-05-11/x-2053138568818684101.md)
   - [AI Native 时代组织研发的思考](articles/2026-05-11/x-2053314677237846060.md)
   - [深度拆解：AI Agent Harness 的构造【译】](articles/2026-05-11/x-2053601852261110201.md)
+  - [观察了三年，我把所有人用 AI 的水平分成了 10 个等级](articles/2026-05-11/x-2053704384505401826.md)
 - **2026-05-08**
   - [逃离大厂之后，我才发现外面根本就没有下雨](articles/2026-05-08/x-2036725515701420062.md)
   - [玉伯把 AI 时代小团队生产力的真相讲透了](articles/2026-05-08/x-2039579774528757976.md)
@@ -39,4 +42,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`c4c9c586714e6d0f1c6dbf127d47030c7eae80ef`](https://github.com/erickchenyn/claude/commit/c4c9c586714e6d0f1c6dbf127d47030c7eae80ef).*
+*This document was automatically generated based on commit [`44070ce2ff89ecf680346396ba3a752492febcfd`](https://github.com/erickchenyn/claude/commit/44070ce2ff89ecf680346396ba3a752492febcfd).*
