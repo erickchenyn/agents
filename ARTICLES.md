@@ -3,6 +3,8 @@
 - **2026-05-11**
   - [多 Agent 系统：真正有效的实践](articles/2026-05-11/x-2047054401341370639-cn.md)
   - [Multi-Agents: What's Actually Working](articles/2026-05-11/x-2047054401341370639.md)
+  - [如何构建一个每天自动变聪明的 Obsidian 知识库](articles/2026-05-11/x-2052235121416188114-cn.md)
+  - [How to Build an Obsidian Knowledge Vault That Gets Smarter Every Day Without You Doing Anything](articles/2026-05-11/x-2052235121416188114.md)
   - [使用 Claude Code：HTML 不可思议的有效性](articles/2026-05-11/x-2052809885763747935-cn.md)
   - [Using Claude Code: The Unreasonable Effectiveness of HTML](articles/2026-05-11/x-2052809885763747935.md)
   - [元-元-提示词：让 AI Agent 真正起效的秘密](articles/2026-05-11/x-2053127519872614419-cn.md)
@@ -42,4 +44,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`44070ce2ff89ecf680346396ba3a752492febcfd`](https://github.com/erickchenyn/claude/commit/44070ce2ff89ecf680346396ba3a752492febcfd).*
+*This document was automatically generated based on commit [`3a4c4c2147d3d89095e6292192464345ecc614dd`](https://github.com/erickchenyn/claude/commit/3a4c4c2147d3d89095e6292192464345ecc614dd).*
