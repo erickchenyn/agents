@@ -18,6 +18,10 @@
 
 !skills
 !skills/**
+# external skills installed via `npx skills add` (symlinks to ~/.agents/skills/)
+skills/huashu-design
+skills/huashu-md-html
+skills/xiaohongshu-skills
 
 !docs
 !docs/**
