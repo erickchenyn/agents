@@ -1,5 +1,12 @@
 # Articles
 
+- **2026-05-13**
+  - [Agent Memory 调研与评测](articles/2026-05-13/moxt-agent-memory-research.md)
+- **2026-05-12**
+  - [AI 正在杀死"传统公司"？](articles/2026-05-12/wx-bi4KHO97Tj8W2LLrkNqCZw.md)
+  - [AI 时代最大的护城河](articles/2026-05-12/x-2052870394093408558-cn.md)
+  - [The next biggest moat in AI](articles/2026-05-12/x-2052870394093408558.md)
+  - [为什么 Claude Code 新 UI，看起来更简陋了](articles/2026-05-12/x-2053830423331865077.md)
 - **2026-05-11**
   - [多 Agent 系统：真正有效的实践](articles/2026-05-11/x-2047054401341370639-cn.md)
   - [Multi-Agents: What's Actually Working](articles/2026-05-11/x-2047054401341370639.md)
@@ -44,4 +51,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`3a4c4c2147d3d89095e6292192464345ecc614dd`](https://github.com/erickchenyn/claude/commit/3a4c4c2147d3d89095e6292192464345ecc614dd).*
+*This document was automatically generated based on commit [`46afcba150777593b960161a2b90ff35fbdb3f29`](https://github.com/erickchenyn/claude/commit/46afcba150777593b960161a2b90ff35fbdb3f29).*
