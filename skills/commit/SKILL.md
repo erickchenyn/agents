@@ -11,7 +11,9 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
   - 不应该在 main 分支上直接提交代码
   - 不应该使用 amend 修改已经提交的 commit 而是创建新的 commit
 - [ ] Commit message 应该符合 Angular Conventional 规范，message 应使用英文且不使用 Scope
-- [ ] 在提交最后记录 `Co-Authored-By: Claude <noreply@anthropic.com>`
+- [ ] 在提交最后记录当前 agent 对应的 co-author：
+  - Claude 使用 `Co-Authored-By: Claude <noreply@anthropic.com>`
+  - Codex 使用 `Co-Authored-By: Codex <noreply@openai.com>`
 - [ ] 成功创建 Commit 之后自动推送到远程
 - [ ] 如果分支还没有对应的 PR，则创建新的 PR，并设置合并后删除 feature 分支
 - [ ] 如果此次修改有相关 Issue，则应该关联 Issue 到 PR
@@ -30,7 +32,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
       - 修复：修改代码修复问题，按「提交代码与 PR」的流程再次提交，然后继续「跟踪 PR」状态
       - 拒绝：调用接口 dismiss 这个 review 并给出拒绝的理由
 - [ ] 最终确保 PR 上的 check 和 review 都没有问题
-  - [ ] 如果 PR 上 review 报告了严重问题，你也确认了最新的提交已经修复了该问题，但 PR 上存在如「跳过了本次 Review」的评论时，你可以追加一条「@claude」的评论来强行触发重新 review。如果 PR 的 review 没有任何问题，就忽略这一步
+  - [ ] 如果 PR 上 review 报告了严重问题，你也确认了最新的提交已经修复了该问题，但 PR 上存在如「跳过了本次 Review」的评论时，你可以追加一条当前 reviewer 对应的评论来强行触发重新 review，如 `@claude` 或 `@codex review`。如果 PR 的 review 没有任何问题，就忽略这一步
   - [ ] 在最新一次部署完之后，告诉我预览环境的链接
 
 ## 询问我是否跟踪并完成代码合并
