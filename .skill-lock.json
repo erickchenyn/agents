@@ -1,0 +1,33 @@
+{
+  "version": 3,
+  "skills": {
+    "huashu-md-html": {
+      "source": "alchaincyf/huashu-md-html",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/alchaincyf/huashu-md-html.git",
+      "skillPath": "SKILL.md",
+      "skillFolderHash": "de20653a5e6f88f0e747fa6a0410e9c78b06e75e",
+      "installedAt": "2026-05-11T09:02:47.254Z",
+      "updatedAt": "2026-05-11T09:02:47.254Z"
+    },
+    "huashu-design": {
+      "source": "alchaincyf/huashu-design",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/alchaincyf/huashu-design.git",
+      "skillPath": "SKILL.md",
+      "skillFolderHash": "934fee0ab4d6b51c0c74a5c3d8054577cf289493",
+      "installedAt": "2026-05-11T09:06:11.125Z",
+      "updatedAt": "2026-05-11T09:06:11.125Z"
+    },
+    "xiaohongshu-skills": {
+      "source": "autoclaw-cc/xiaohongshu-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/autoclaw-cc/xiaohongshu-skills.git",
+      "skillPath": "SKILL.md",
+      "skillFolderHash": "4958dcf2fb01321c48cf898ff5eca253bbdca029",
+      "installedAt": "2026-05-11T09:07:29.380Z",
+      "updatedAt": "2026-05-11T09:07:29.380Z"
+    }
+  },
+  "dismissed": {}
+}
