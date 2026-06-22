@@ -23,6 +23,20 @@ jobs:
       - name: Get latest commit SHA
         id: commit
         run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Detect agent attribution
+        id: agent
+        run: |
+          commit_message="$(git log -1 --format=%B)"
+          if grep -qi 'Co-Authored-By: Codex <noreply@openai.com>' <<< "$commit_message"; then
+            echo "name=Codex" >> $GITHUB_OUTPUT
+            echo "email=noreply@openai.com" >> $GITHUB_OUTPUT
+          elif grep -qi 'Co-Authored-By: Claude <noreply@anthropic.com>' <<< "$commit_message"; then
+            echo "name=Claude" >> $GITHUB_OUTPUT
+            echo "email=noreply@anthropic.com" >> $GITHUB_OUTPUT
+          else
+            echo "name=github-actions[bot]" >> $GITHUB_OUTPUT
+            echo "email=41898282+github-actions[bot]@users.noreply.github.com" >> $GITHUB_OUTPUT
+          fi
       - name: Generate README summary
         run: |
           # Create README.md header
@@ -106,8 +120,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --local user.email "noreply@anthropic.com"
-          git config --local user.name "AGENTS"
+          git config --local user.email "${{ steps.agent.outputs.email }}"
+          git config --local user.name "${{ steps.agent.outputs.name }}"
           git add README.md AGENTS.md
           git commit -m "docs(agents): auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase
