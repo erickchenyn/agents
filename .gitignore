@@ -3,6 +3,7 @@
 !.gitignore
 !settings.json
 !.mailmap
+!.skill-lock.json
 
 !.claude/
 !.claude/config
@@ -18,7 +19,7 @@
 
 !skills
 !skills/**
-# external skills installed via `npx skills add` (symlinks to ~/.agents/skills/)
+# external skills installed via skill lock
 skills/huashu-design
 skills/huashu-md-html
 skills/xiaohongshu-skills
