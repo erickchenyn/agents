@@ -27,9 +27,9 @@ jobs:
         run: |
           # Create README.md header
           cat > README.md << 'EOF'
-          # Claude
+          # AGENTS
 
-          This repository contains Claude Code global prompts for personal use.
+          This repository contains AGENTS global prompts and skills for personal use.
 
           | Skill | Description |
           |-------|-------------|
@@ -107,7 +107,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "noreply@anthropic.com"
-          git config --local user.name "Claude"
+          git config --local user.name "AGENTS"
           git add README.md AGENTS.md
           git commit -m "docs(agents): auto summary (${{ steps.commit.outputs.sha }})"
           git pull --rebase

@@ -5,13 +5,8 @@
 !.mailmap
 !.skill-lock.json
 
-!.claude/
-!.claude/config
-!.claude/config/commit.config.json
-
 !AGENTS.md
 !ARTICLES.md
-!CLAUDE.md
 !README.md
 
 !.github
