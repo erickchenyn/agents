@@ -9,17 +9,17 @@ reason: 改为使用 `claude --worktree` 创建工作区。可以在 `settings.j
 
 ```bash
 # worktree
-alias wl="git worktree list"
+alias gwl="git worktree list"
 ```
 
 ## 切换已有工作区
 
 ```bash
 # worktree checkout
-wc() {
+gwc() {
   if [ -z "$1" ]; then
-    echo "Usage: wc <worktree-path>"
-    echo "Example: wc /home/wukong/moxt-chenyn-1770116665"
+    echo "Usage: gwc <worktree-path>"
+    echo "Example: gwc /home/wukong/moxt-chenyn-1770116665"
     return 1
   fi
 
@@ -39,7 +39,7 @@ wc() {
 
 ```bash
 # worktree add
-wa() {
+gwa() {
   local timestamp=$(date +%s)
   local branch_name="chenyn/$timestamp"
   local main_worktree=$(git worktree list --porcelain | grep "^worktree " | head -1 | cut -d' ' -f2-)
@@ -65,7 +65,7 @@ wa() {
 
 ```bash
 # worktree remove
-wr() {
+gwr() {
   local current_dir=$(pwd)
   local current_worktree=$(basename "$current_dir")
   local main_worktree=$(git worktree list --porcelain | grep "^worktree " | head -1 | cut -d' ' -f2-)
