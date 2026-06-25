@@ -9,4 +9,4 @@ This repository contains AGENTS global prompts and skills for personal use.
 
 ---
 
-*This document was automatically generated based on commit [`11a718ae062ebee34acd9024a7d6706638e5861c`](https://github.com/erickchenyn/agents/commit/11a718ae062ebee34acd9024a7d6706638e5861c).*
+*This document was automatically generated based on commit [`029f21216179f8eaf72acfee5d25505e6a798754`](https://github.com/erickchenyn/agents/commit/029f21216179f8eaf72acfee5d25505e6a798754).*
