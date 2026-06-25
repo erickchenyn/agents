@@ -16,6 +16,7 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
   - Codex 使用 `Co-Authored-By: Codex <noreply@openai.com>`
 - [ ] 成功创建 Commit 之后自动推送到远程
 - [ ] 如果分支还没有对应的 PR，则创建新的 PR，并设置合并后删除 feature 分支
+  - 如果当前 repo 是 fork 仓库，则默认向原 repo 提 PR，而不是向当前 fork repo 提 PR
 - [ ] 如果此次修改有相关 Issue，则应该关联 Issue 到 PR
 
 ## 跟踪 PR 状态
