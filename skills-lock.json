@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "huashu-md-html": {
+      "source": "alchaincyf/huashu-md-html",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "a188725bfbc9145115ed1bf6c0245b4b0e099fa4a3feff131ff01230cc21d931"
+    },
+    "huashu-design": {
+      "source": "alchaincyf/huashu-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "cf2469d429bd028099da5546af35e8046b4903feeb549273596f29f8a4848501"
+    },
+    "xiaohongshu-skills": {
+      "source": "autoclaw-cc/xiaohongshu-skills",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "6b7949b4c981d31e4b932c3faf7ab4abcb45e16baa391887e7b95283f34ff7c7"
+    }
+  }
+}
