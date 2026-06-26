@@ -1,4 +1,4 @@
-# AGENTS
+# SKILLS
 
 This repository contains AGENTS global prompts and skills for personal use.
 
