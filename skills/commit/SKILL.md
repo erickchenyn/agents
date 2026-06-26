@@ -42,6 +42,8 @@ description: 提交代码、跟踪 PR 状态、完成代码合并
   - 否：则你的工作完成，跳过以下所有步骤
   - 是：你要继续完成以下工作
     - [ ] 将 PR 加入合并队列或者确保使用 squash merge 或 rebase merge 来合并 PR
+      - 使用 squash merge 时，merge commit body 必须包含 PR 中所有 commit 的 summary
+      - 使用 squash merge 时，merge commit body 必须保留 PR 中所有 commit 的 `Co-Authored-By` trailer，不能因为自定义 `--body` 而丢失 co-author 信息
     - [ ] 等待 PR 被成功合并，确认 feature 分支在远程已被删除
     - [ ] 如 PR 有关联的 Issue，关闭 Issue
 
