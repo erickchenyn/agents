@@ -4,4 +4,4 @@
 
 ---
 
-*This document was automatically generated based on commit [`a4e43caf0f9ef6c164441b92b29ac69c4fd6ce35`](https://github.com/erickchenyn/agents/commit/a4e43caf0f9ef6c164441b92b29ac69c4fd6ce35).*
+*This document was automatically generated based on commit [`76ed833102415cfd5149a529d3dac2f2f8467ed3`](https://github.com/erickchenyn/agents/commit/76ed833102415cfd5149a529d3dac2f2f8467ed3).*
