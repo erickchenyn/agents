@@ -1,4 +1,4 @@
-# MOXT DEV RULES
+# MOXT 开发规范
 
 ## 提交
 
