@@ -1,8 +1,8 @@
 *
 
+!.mailmap
 !.gitignore
 !settings.json
-!.mailmap
 !skills-lock.json
 
 !AGENTS.md
@@ -20,3 +20,5 @@ skills/xiaohongshu-skills
 
 !docs
 !docs/**
+
+**/__pycache__
