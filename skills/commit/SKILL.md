@@ -1,54 +1,53 @@
 ---
 name: commit
-description: 提交代码、跟踪 PR 状态、完成代码合并
+description: Commit code, track PR status, and complete code merges
 ---
 
-你需要严格按下面的步骤来操作，只有完成或跳过一步才能进行下一步
+Follow the steps below strictly. Do not proceed to the next step until the current step has been completed or explicitly skipped.
 
-## 提交代码和 PR
+## Commit Code And Open PR
 
-- [ ] 如果当前在 main 分支上，先创建新的 feature 分支，分支名以 `chenyn-` 开头，分支名遵守 kebab-case
-  - 不应该在 main 分支上直接提交代码
-  - 不应该使用 amend 修改已经提交的 commit 而是创建新的 commit
-- [ ] Commit message 应该符合 Angular Conventional 规范，message 应使用英文且不使用 Scope
-- [ ] 在提交最后记录当前 agent 对应的 co-author：
-  - Claude 使用 `Co-Authored-By: Claude <noreply@anthropic.com>`
-  - Codex 使用 `Co-Authored-By: Codex <noreply@openai.com>`
-- [ ] 成功创建 Commit 之后自动推送到远程
-- [ ] 如果分支还没有对应的 PR，则创建新的 PR，并设置合并后删除 feature 分支
-  - 如果当前 repo 是 fork 仓库，则默认向原 repo 提 PR，而不是向当前 fork repo 提 PR
-- [ ] 如果此次修改有相关 Issue，则应该关联 Issue 到 PR
+- [ ] If the current branch is `main`, create a new feature branch first. The branch name must start with `chenyn-` and use kebab-case.
+  - Do not commit directly to the `main` branch.
+  - Do not use amend to modify an existing commit; create a new commit instead.
+- [ ] The commit message must follow Angular Conventional Commits, use English, and omit the scope.
+- [ ] Add the co-author trailer for the current agent at the end of the commit:
+  - Use `Co-Authored-By: Claude <noreply@anthropic.com>` for Claude.
+  - Use `Co-Authored-By: Codex <noreply@openai.com>` for Codex.
+- [ ] After successfully creating the commit, push it to the remote automatically.
+- [ ] If the branch does not have a corresponding PR yet, create a new PR and configure the feature branch to be deleted after merge.
+  - If the current repo is a fork, open the PR against the upstream repo by default, not against the fork repo.
+- [ ] If this change is related to an issue, link the issue to the PR.
 
-## 跟踪 PR 状态
+## Track PR Status
 
-- [ ] 确保 PR 已经创建，告诉我 PR 的链接
-- [ ] 跟踪 PR 上的 check 和 review 状态
-  - 如果有任何 check 失败
-    - [ ] 先将失败的 job 内容总结给我
-    - [ ] 根据错误信息修复相关错误，按上一章「提交代码与 PR」的流程再次提交，然后继续「跟踪 PR」状态
-  - 如果发现 review 中有严重问题存在
-    - [ ] 先将问题总结给我
-    - [ ] 根据这次 PR 的修改内容和背景（可以通过 PR 的描述的关联 Issue 了解）判断下问题是否真实存在且合理，是否需要修复，告诉我你的判断和依据
-    - [ ] 向用户确认是修复问题还是拒绝修复；如果当前环境提供交互式询问工具，可以使用该工具，否则直接在对话中询问
-      - 修复：修改代码修复问题，按「提交代码与 PR」的流程再次提交，然后继续「跟踪 PR」状态
-      - 拒绝：调用接口 dismiss 这个 review 并给出拒绝的理由
-- [ ] 最终确保 PR 上的 check 和 review 都没有问题
-  - [ ] 如果 PR 上 review 报告了严重问题，你也确认了最新的提交已经修复了该问题，但 PR 上存在如「跳过了本次 Review」的评论时，你可以追加一条当前 reviewer 对应的评论来强行触发重新 review，如 `@claude` 或 `@codex review`。如果 PR 的 review 没有任何问题，就忽略这一步
-  - [ ] 在最新一次部署完之后，告诉我预览环境的链接
+- [ ] Make sure the PR has been created, then tell me the PR link.
+- [ ] Track the PR checks and review status.
+  - If any check fails:
+    - [ ] Summarize the failed job for me first.
+    - [ ] Fix the relevant errors based on the error messages, submit again by following the "Commit Code And Open PR" flow, then continue tracking the PR status.
+  - If a review reports any serious issues:
+    - [ ] Summarize the issues for me first.
+    - [ ] Based on this PR's changes and context, which may be available through the linked issue in the PR description, decide whether the issue really exists, whether it is reasonable, and whether it needs to be fixed. Tell me your judgment and reasoning.
+    - [ ] Confirm with the user whether to fix the issue or reject it. If the current environment provides an interactive prompt tool, use it; otherwise, ask directly in the conversation.
+      - Fix: change the code to fix the issue, submit again by following the "Commit Code And Open PR" flow, then continue tracking the PR status.
+      - Reject: dismiss the review through the relevant API and provide the rejection reason.
+- [ ] Finally, make sure the PR checks and reviews have no remaining issues.
+  - [ ] If a review reported serious issues and you have confirmed that the latest commit has fixed them, but the PR has a comment such as "skipped this review", you may add a comment for the corresponding reviewer to force a new review, such as `@claude` or `@codex review`. If the PR review has no issues, ignore this step.
+  - [ ] After the latest deployment completes, tell me the preview environment link.
 
-## 询问我是否跟踪并完成代码合并
+## Ask Whether To Track And Complete The Merge
 
-- [ ] 向用户确认是否要自动合并 PR；如果用户已经明确要求合并，则不需要重复确认
-  - 否：则你的工作完成，跳过以下所有步骤
-  - 是：你要继续完成以下工作
-    - [ ] 将 PR 加入合并队列或者确保使用 squash merge 或 rebase merge 来合并 PR
-      - 使用 squash merge 时，merge commit body 必须包含 PR 中所有 commit 的 summary
-      - 使用 squash merge 时，merge commit body 必须保留 PR 中所有 commit 的 `Co-Authored-By` trailer，不能因为自定义 `--body` 而丢失 co-author 信息
-    - [ ] 等待 PR 被成功合并，确认 feature 分支在远程已被删除
-    - [ ] 如 PR 有关联的 Issue，关闭 Issue
+- [ ] Confirm with the user whether to automatically merge the PR. If the user has already explicitly requested a merge, do not ask again.
+  - No: your work is complete; skip all remaining steps.
+  - Yes: continue with the following work.
+    - [ ] Add the PR to the merge queue, or ensure that the PR is merged with squash merge or rebase merge.
+      - When using squash merge, the merge commit body must include the summary of every commit in the PR.
+      - When using squash merge, the merge commit body must preserve all `Co-Authored-By` trailers from every commit in the PR. Do not lose co-author information because of a custom `--body`.
+    - [ ] Wait until the PR has been merged successfully, then confirm that the feature branch has been deleted from the remote.
+    - [ ] If the PR is linked to an issue, close the issue.
 
-## 相关说明
+## Notes
 
-- 在 git 仓库下使用 gh cli 来操作 Git
-- 确保 git user 信息有效
-  - **特殊规则**：如果在 moxt/paraflow 仓库下，git user 邮箱必须是 `erick.chen@paraflow.com`
+- Use the `gh` CLI to operate Git when inside a git repository.
+- In the `moxt/paraflow` repository, the git user email must be `erick.chen@paraflow.com`.
