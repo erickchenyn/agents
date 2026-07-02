@@ -1,0 +1,4 @@
+interface:
+  display_name: "MFS Save Merge Audit"
+  short_description: "Audit MFS save-merge outcomes and conflicts"
+  default_prompt: "Use $mfs-save-merge-audit to summarize recent MFS save-merge outcomes and inspect overlap conflict examples."
